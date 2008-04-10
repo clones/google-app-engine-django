@@ -54,7 +54,7 @@ class Command(BaseCommand):
     from django.core.management import call_command
     call_command('loaddata', 'initial_data')
     if fixtures:
-      call_command('loaddata', ' '.join(fixtures))
+      call_command('loaddata', *fixtures)
 
     # Build new arguments for dev_appserver.
     new_args = argv[0:1]
