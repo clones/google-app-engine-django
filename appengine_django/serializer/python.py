@@ -86,7 +86,7 @@ def Deserializer(object_list, **options):
     # Look up the model and starting build a dict of data for it.
     Model = python._get_model(d["model"])
     data = {}
-    key = db.Key(d["pk"])
+    key = resolve_key(Model._meta.module_name, d["pk"])
     if key.name():
       data["key_name"] = key.name()
     if key.parent():
@@ -109,22 +109,46 @@ def Deserializer(object_list, **options):
 
       if isinstance(field, db.Reference):
         # Resolve foreign key references.
-        if isinstance(field_value, list):
-          # field contains a from_path sequence
-          data[field.name] = db.Key.from_path(*field_value)
-        elif isinstance(field_value, basestring):
-          if field_value.find("from_path") != -1:
-            # field encoded in repr(key) format
-            data[field.name] = eval(field_value)
-          else:
-            # field encoded a str(key) format
-            data[field.name] = db.Key(field_value)
-        else:
-          raise base.DeserializationError(u"Invalid reference value: '%s'" %
-                                          field_value)
+        data[field.name] = resolve_key(Model._meta.module_name, field_value)
         if not data[field.name].name():
           raise base.DeserializationError(u"Cannot load Reference with "
                                           "unnamed key: '%s'" % field_value)
       else:
         data[field.name] = field.validate(field_value)
     yield base.DeserializedObject(Model(**data), m2m_data)
+
+
+def resolve_key(model, key_data):
+  """Creates a Key instance from a some data.
+
+  Args:
+    model: The name of the model this key is being resolved for. Only used in
+      the fourth case below (a plain key_name string).
+    key_data: The data to create a key instance from. May be in four formats:
+      * The str() output of a key instance. Eg. A base64 encoded string.
+      * The repr() output of a key instance. Eg. A string for eval().
+      * A list of arguments to pass to db.Key.from_path.
+      * A single string value, being the key_name of the instance. When this
+        format is used the resulting key has no parent, and is for the model
+        named in the model parameter.
+
+  Returns:
+    An instance of db.Key. If the data cannot be used to create a Key instance
+    an error will be raised.
+  """
+  if isinstance(key_data, list):
+    # The key_data is a from_path sequence.
+    return db.Key.from_path(*key_data)
+  elif isinstance(key_data, basestring):
+    if key_data.find("from_path") != -1:
+      # key_data is encoded in repr(key) format
+      return eval(key_data)
+    else:
+      try:
+        # key_data encoded a str(key) format
+        return db.Key(key_data)
+      except datastore_types.datastore_errors.BadKeyError, e:
+        # Final try, assume it's a plain key name for the model.
+        return db.Key.from_path(model, key_data)
+  else:
+    raise base.DeserializationError(u"Invalid key data: '%s'" % key_data)

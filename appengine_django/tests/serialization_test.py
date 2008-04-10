@@ -160,6 +160,29 @@ class SerializationTest(unittest.TestCase):
     result[0].save()
     self.compareObjects(obj, result[0].object.friend, format)
 
+  def doModelKeyDeserialisationReferenceTest(self, lookup_dict, format):
+    """Tests a model with a key can be loaded OK for a format.
+
+    Args:
+      lookup_dict: A dictionary indexed by format containing serialized strings
+        of the objects to load.
+      format: The format to extract from the dict and deserialize.
+
+    Returns:
+      This function has no return value but raises assertion errors if the
+      string cannot be deserialized correctly or the resulting object is not an
+      instance of ModelA with a key named 'test'.
+    """
+    if format not in lookup_dict:
+      # Check not valid for this format.
+      return
+    s = lookup_dict[format]
+    result = list(serializers.deserialize(format, StringIO(s)))
+    self.assertEqual(1, len(result), "expected 1 object from %s" % format)
+    result[0].save()
+    self.assert_(isinstance(result[0].object, ModelA))
+    self.assertEqual("test", result[0].object.key().name())
+
   # Lookup dicts for the above (doLookupDeserialisationReferenceTest) function.
   SERIALIZED_WITH_KEY_AS_LIST = {
       "json": """[{"pk": "agR0ZXN0chMLEgZNb2RlbEIiB21vZGVsYmkM", """
@@ -180,6 +203,24 @@ class SerializationTest(unittest.TestCase):
               """ agR0ZXN0chMLEgZNb2RlbEEiB21vZGVsYWkM\n"""
   }
 
+  # Lookup dict for the doModelKeyDeserialisationReferenceTest function.
+  MK_SERIALIZED_WITH_LIST = {
+      "json": """[{"pk": ["ModelA", "test"], "model": "tests.modela", """
+              """"fields": {}}]""",
+      "yaml": """-\n fields: {description: null}\n model: tests.modela\n """
+              """pk: [ModelA, test]\n"""
+  }
+  MK_SERIALIZED_WITH_KEY_REPR = {
+      "json": """[{"pk": "datastore_types.Key.from_path('ModelA', 'test')", """
+              """"model": "tests.modela", "fields": {}}]""",
+      "yaml": """-\n fields: {description: null}\n model: tests.modela\n """
+              """pk: \'datastore_types.Key.from_path("ModelA", "test")\'\n"""
+  }
+  MK_SERIALIZED_WITH_KEY_AS_TEXT = {
+      "json": """[{"pk": "test", "model": "tests.modela", "fields": {}}]""",
+      "yaml": """-\n fields: {description: null}\n model: tests.modela\n """
+              """pk: test\n"""
+  }
 
   # The following functions are all expanded by the metaclass to be run once
   # for every registered Django serialization module.
@@ -221,6 +262,21 @@ class SerializationTest(unittest.TestCase):
     """Tests that a reference specified as repr(Key) in can loaded OK."""
     self.doLookupDeserialisationReferenceTest(self.SERIALIZED_WITH_KEY_REPR,
                                               format)
+
+  def runCreateModelKeyFromListTest(self, format):
+    """Tests that a model key specified as a list can be loaded OK."""
+    self.doModelKeyDeserialisationReferenceTest(self.MK_SERIALIZED_WITH_LIST,
+                                                format)
+
+  def runCreateModelKeyFromReprTest(self, format):
+    """Tests that a model key specified as a repr(Key) can be loaded OK."""
+    self.doModelKeyDeserialisationReferenceTest(
+        self.MK_SERIALIZED_WITH_KEY_REPR, format)
+
+  def runCreateModelKeyFromTextTest(self, format):
+    """Tests that a reference specified as a plain key_name loads OK."""
+    self.doModelKeyDeserialisationReferenceTest(
+        self.MK_SERIALIZED_WITH_KEY_AS_TEXT, format)
 
 
 if __name__ == '__main__':
