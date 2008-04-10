@@ -54,9 +54,22 @@ def get_datastore_paths():
   return datastore_path, history_path
 
 
-def get_test_datastore_paths():
-  """Return None, None to request an in-memory datastore for testing."""
-  return None, None
+def get_test_datastore_paths(inmemory=True):
+  """Returns a tuple with the path to the test datastore and history file.
+
+  If inmemory is true, (None, None) is returned to request an in-memory
+  datastore. If inmemory is false the path returned will be similar to the path
+  returned by get_datastore_paths but with a different name.
+
+  Returns:
+    (datastore_path, history_path)
+  """
+  if inmemory:
+    return None, None
+  datastore_path, history_path = get_datastore_paths()
+  datastore_path = datastore_path.replace("datastore", "testdatastore")
+  history_path = history_path.replace("datastore", "testdatastore")
+  return datastore_path, history_path
 
 
 def destroy_datastore(datastore_path, history_path):
@@ -104,13 +117,14 @@ class DatabaseWrapper(BaseDatabaseWrapper):
   def __init__(self, *args, **kwargs):
     super(DatabaseWrapper, self).__init__(*args, **kwargs)
     self.use_test_datastore = kwargs.get("use_test_datastore", False)
+    self.test_datastore_inmemory = kwargs.get("test_datastore_inmemory", True)
     if have_appserver:
       return
     self._setup_stubs()
 
   def _get_paths(self):
     if self.use_test_datastore:
-      return get_test_datastore_paths()
+      return get_test_datastore_paths(self.test_datastore_inmemory)
     else:
       return get_datastore_paths()
 

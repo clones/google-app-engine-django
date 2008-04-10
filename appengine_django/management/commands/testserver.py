@@ -42,13 +42,13 @@ class Command(BaseCommand):
   def run_from_argv(self, argv):
     fixtures = argv[2:]
 
-    # Remove the existing test datastore.
-    datastore_path, history_path = get_test_datastore_paths()
-    destroy_datastore(datastore_path, history_path)
-
-    # Ensure the test datastore is used.
+    # Ensure an on-disk test datastore is used.
     from django.db import connection
     connection.use_test_datastore = True
+    connection.test_datastore_inmemory = False
+
+    # Flush any existing test datastore.
+    connection.flush()
 
     # Load the fixtures.
     from django.core.management import call_command
@@ -57,6 +57,7 @@ class Command(BaseCommand):
       call_command('loaddata', *fixtures)
 
     # Build new arguments for dev_appserver.
+    datastore_path, history_path = get_test_datastore_paths(False)
     new_args = argv[0:1]
     new_args.extend(['--datastore_path', datastore_path])
     new_args.extend(['--history_path', history_path])

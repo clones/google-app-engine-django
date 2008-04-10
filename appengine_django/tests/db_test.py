@@ -49,8 +49,14 @@ class DatastoreTest(unittest.TestCase):
     self.assertNotEqual(-1, d_path.find("django_%s" % appid))
     self.assertNotEqual(-1, h_path.find("django_%s" % appid))
 
-  def testTestDatastorePath(self):
+  def testTestInMemoryDatastorePath(self):
     """Tests that the test datastore is using the in-memory datastore."""
     td_path, th_path = base.get_test_datastore_paths()
     self.assert_(td_path is None)
     self.assert_(th_path is None)
+
+  def testTestFilesystemDatastorePath(self):
+    """Tests that the test datastore is on the filesystem when requested."""
+    td_path, th_path = base.get_test_datastore_paths(False)
+    self.assertNotEqual(-1, td_path.find("testdatastore"))
+    self.assertNotEqual(-1, th_path.find("testdatastore"))
