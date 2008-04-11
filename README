@@ -1,0 +1,137 @@
+GOOGLE APP ENGINE HELPER FOR DJANGO
+===================================
+
+This package provides a helper that eases the process of developing a Django
+project to run on the Google App Engine. The helper is structured as a Django
+application that should be installed inside your project. See below for
+detailed usage instructions.
+
+The helper provides the following functionality:
+
+  * The ability to use most manage.py commands
+  * A BaseModel class that appears the same as the standard Django Model class.
+  * The ability to serialize and deserialize model instances to JSON, YAML and XML.
+  * Access to Django's test framework with a test datastore and support for fixtures.
+
+The helper is provided in the context of a blank Django project, very
+similar to what would be provided by the django-admin.py startproject command.
+This project contains minor customisations to manage.py and settings.py that
+demonstrate how to integrate the helper with a Django project.
+
+To use the helper you have two choices:
+1) Copy the entire project provided with the helper and modify it to bootstrap
+   your project.
+2) Copy the appengine_django application into your existing project and modify
+   the settings appropriately.
+Instructions for both cases are provided below.
+
+
+Obtaining the helper
+--------------------
+
+You can download the latest released version of the helper from the Google Code
+project at: http://code.google.com/p/google-app-engine-django
+
+The helper will be unzipped into a directory named appengine_helper_for_django.
+
+Alternatively you can check out the latest version of the helper directly from
+the SVN repository with the following command:
+
+svn co http://google-app-engine-django.googlecode.com/svn/trunk/ \
+  appengine_helper_for_django
+
+
+Using the helper to bootstrap a new project
+-------------------------------------------
+
+1) Copy the appengine_helper_for_django directory to a new location named after
+   your project
+
+2) Edit the application line in app.yaml to match the name you registered your
+   application under in the Admin Console.
+
+3) If you have installed the Google App Engine SDK into your Python search path
+   you may skip this step.
+
+   Copy (or create a symlink) from the location of the SDK to the
+   google_appengine directory inside your project. E.g:
+
+   ln -s /home/me/google_appengine /home/me/myproject/google_appengine
+
+   Note: See KNOWN_ISSUES for a note about uploading your application when
+         using this setup.
+
+4) Run manage.py to start a new application for your code:
+
+   python manage.py startapp myapplication
+
+5) Add your code!
+
+
+Installing the helper into an existing project
+----------------------------------------------
+
+1) Copy the appengine_django application from within the helper into your
+   project.
+
+2) Copy app.yaml and main.py from within the helper into your project.
+
+3) Edit the application line in app.yaml to match the name you registered your
+   application under in the Admin Console.
+
+4) Add the following two lines to the top of manage.py
+
+ from appengine_django import InstallAppengineHelperForDjango
+ InstallAppengineHelperForDjango()
+
+5) If you have installed the Google App Engine SDK into your Python search path
+   you may skip this step.
+
+   Copy (or create a symlink) from the location of the SDK to the
+   google_appengine directory inside your project. E.g:
+
+   ln -s /home/me/google_appengine /home/me/myproject/google_appengine
+
+   Note: See KNOWN_ISSUES for a note about uploading your application when
+         using this setup.
+
+6) Remove incompatible settings from your settings.py file.
+
+   The helper can warn you about some settings that it knows to be
+   incompatible, you can see these warnings by running:
+    python manage.py diffsettings
+
+   For the rest you'll just have to experiment by trial and error. The main
+   problem here is usually loading middleware that attempts to import modules
+   that are banned by the appserver.
+
+7) Port your models and code over to the appengine_django.model.BaseForm
+   class.
+
+
+Contributing to the helper
+--------------------------
+
+We would be happy to consider any additions or bugfixes that you would like to
+add to the helper. Please add them as a patch, in unified diff format to the
+Issue Tracker at: http://code.google.com/p/google-app-engine-django/issues/list
+
+Before we can accept your code you will need to have signed the Google
+Contributer License. You can find this at:
+
+http://code.google.com/legal/individual-cla-v1.0.html
+or
+http://code.google.com/legal/corporate-cla-v1.0.html
+
+If you are an Individual contributor you will be able to electronically sign
+and submit the form at the URL above. Please ensure that you use the same email
+address to submit your patch as you used to sign the CLA.
+
+
+Reporting Bugs and Requesting Features
+--------------------------------------
+
+If you find a bug or would like to request a feature you may do so at the
+Google Code issue tracker for this project:
+
+http://code.google.com/p/google-app-engine-django/issues/entry
