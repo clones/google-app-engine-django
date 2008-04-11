@@ -11,5 +11,5 @@ release:
 		$(tmpdir)/appengine_helper_for_django/VERSION
 	@rm $(tmpdir)/appengine_helper_for_django/Makefile
 	@cd $(tmpdir); find . | \
-		zip $(pwd)/appengine_helper_for_django.zip -@ >/dev/null
+		zip $(pwd)/appengine_helper_for_django-r$(r).zip -@ >/dev/null
 	@rm -rf $(tmpdir)
