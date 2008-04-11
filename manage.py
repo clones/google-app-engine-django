@@ -14,8 +14,8 @@
 # limitations under the License.
 
 
-from appengine_django import InstallAppengineDjango
-InstallAppengineDjango()
+from appengine_django import InstallAppengineHelperForDjango
+InstallAppengineHelperForDjango()
 
 from django.core.management import execute_manager
 try:

@@ -28,8 +28,8 @@ appengine project.
 
 To use this module add the following two lines to your main.py and manage.py
 scripts at the end of your imports:
-  from appengine_django import InstallAppengineDjango
-  InstallAppengineDjango()
+  from appengine_django import InstallAppengineHelperForDjango
+  InstallAppengineHelperForDjango()
 
 If you would like to use a version of Django other than that provided by the
 system all you need to do is include it in a directory just above this helper,
@@ -59,7 +59,8 @@ appconfig = None
 have_appserver = False
 
 # Hide everything other than the flags above and the install function.
-__all__ = ("appid", "appconfig", "have_appserver", "InstallAppengineDjango")
+__all__ = ("appid", "appconfig", "have_appserver",
+           "InstallAppengineHelperForDjango")
 
 
 INCOMPATIBLE_COMMANDS = ["adminindex", "createcachetable", "dbshell",
@@ -281,7 +282,7 @@ def InstallReplacementImpModule():
   logging.debug("Installed replacement imp module")
 
 
-def InstallAppengineDjango():
+def InstallAppengineHelperForDjango():
   """Installs and Patches all of the classes/methods required for integration.
 
   If the variable DEBUG_APPENGINE_DJANGO is set in the environment verbose
@@ -291,7 +292,7 @@ def InstallAppengineDjango():
     logging.getLogger().setLevel(logging.DEBUG)
   else:
     logging.getLogger().setLevel(logging.INFO)
-  logging.info("Loading the appengine Django integration module...")
+  logging.debug("Loading the Google App Engine Helper for Django...")
 
   # Force Django to reload its settings.
   settings._target = None
@@ -306,4 +307,4 @@ def InstallAppengineDjango():
   CleanupDjangoSettings()
   ModifyAvailableCommands()
 
-  logging.info("Successfully loaded the appengine Django integration module.")
+  logging.debug("Successfully loaded the Google App Engine Helper for Django.")
