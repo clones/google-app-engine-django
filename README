@@ -105,7 +105,7 @@ Installing the helper into an existing project
    problem here is usually loading middleware that attempts to import modules
    that are banned by the appserver.
 
-7) Port your models and code over to the appengine_django.model.BaseForm
+7) Port your models and code over to the appengine_django.model.BaseModel
    class.
 
 
