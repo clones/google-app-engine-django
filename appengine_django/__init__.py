@@ -42,16 +42,39 @@ import logging
 import os
 import sys
 
+
+DIR_PATH = os.path.abspath(os.path.dirname(__file__))
+PARENT_DIR = os.path.dirname(DIR_PATH)
+
+# Add this project to the start of sys path to enable direct imports.
+sys.path = [PARENT_DIR,] + sys.path
+
+# Try to import the appengine code, if it fails check for a local copy of
+# the SDK to add to the sys.path
+try:
+  from google.appengine.api import apiproxy_stub_map
+except ImportError, e:
+  SDK_PATH = os.path.join(PARENT_DIR, 'google_appengine')
+  if not os.path.exists(SDK_PATH):
+    raise
+  EXTRA_PATHS = [
+      SDK_PATH,
+      os.path.join(SDK_PATH, 'lib', 'django'),
+      os.path.join(SDK_PATH, 'lib', 'webob'),
+      os.path.join(SDK_PATH, 'lib', 'yaml', 'lib'),
+  ]
+  sys.path.extend(EXTRA_PATHS)
+  from google.appengine.api import apiproxy_stub_map
+
+
 # Remove the standard version of Django if a local copy has been provided.
-parent_dir = os.path.dirname(os.path.dirname(__file__))
-if os.path.exists(os.path.join(parent_dir, 'django')):
+if os.path.exists(os.path.join(PARENT_DIR, 'django')):
   for k in [k for k in sys.modules if k.startswith('django')]:
     del sys.modules[k]
 
 from django import VERSION
 from django.conf import settings
 
-from google.appengine.api import apiproxy_stub_map
 
 # Flags made available this module
 appid = None

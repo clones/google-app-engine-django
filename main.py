@@ -25,18 +25,11 @@ import os
 import sys
 import logging
 
-# Google App Engine imports.
-from google.appengine.ext.webapp import util
-
-# Enable info logging by the app (this is separate from appserver's
-# logging).
-logging.getLogger().setLevel(logging.INFO)
-
-# Force sys.path to have our own directory first, so we can import from it.
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
-
 from appengine_django import InstallAppengineHelperForDjango
 InstallAppengineHelperForDjango()
+
+# Google App Engine imports.
+from google.appengine.ext.webapp import util
 
 # Import the part of Django that we use here.
 import django.core.handlers.wsgi
