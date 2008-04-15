@@ -54,8 +54,14 @@ sys.path = [PARENT_DIR,] + sys.path
 try:
   from google.appengine.api import apiproxy_stub_map
 except ImportError, e:
-  SDK_PATH = os.path.join(PARENT_DIR, 'google_appengine')
-  if not os.path.exists(SDK_PATH):
+  SDK_PATH = None
+  paths = [os.path.join(PARENT_DIR, 'google_appengine'),
+           '/usr/local/google_appengine']
+  for sdk_path in paths:
+    if os.path.exists(sdk_path):
+      SDK_PATH = sdk_path
+      break
+  if SDK_PATH is None:
     raise
   EXTRA_PATHS = [
       SDK_PATH,
