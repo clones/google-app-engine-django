@@ -2,15 +2,14 @@ Known Issues with the Google App Engine Helper for Django
 =========================================================
 
 * Support for the skip_files option in app.yaml is not working in the current
-  SDK release. This means that if you have choosen to put a copy of the Google
+  SDK release. This means that if you have chosen to put a copy of the Google
   App Engine SDK inside your project at google_appengine/ you will need to
   remove it before running appcfg.py or you will upload the entire SDK to your
   account, taking up more of your file quota than is necessary.
 
-  The work around for this is as follows, assuming you are in the base
-  directory of your project:
+  This is tracked in the SDK issue tracker at:
+  http://code.google.com/p/googleappengine/issues/detail?id=80
 
-  mv google_appengine ../
-  ../google_appengine/appcfg.py ...
-  mv ../google_appengine .
+  Please see that issue for several workarounds that you may use until an
+  updated SDK is released.
 
