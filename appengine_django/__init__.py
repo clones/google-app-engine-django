@@ -266,6 +266,16 @@ def CleanupDjangoSettings():
       logging.warn("Application module '%s' is not compatible. Removed!" % app)
   setattr(settings, "INSTALLED_APPS", tuple(app_mods))
 
+  # Remove incompatible context processors.
+  bad_processors = ('django.core.context_processors.auth',)
+  ctx_procs = list(getattr(settings, "TEMPLATE_CONTEXT_PROCESSORS", ()))
+  for proc in ctx_procs[:]:
+    if proc in bad_processors:
+      ctx_procs.remove(proc)
+      logging.warn("Template Context Processor '%s' is incompatible. Removed!"
+                   % proc)
+  setattr(settings, "TEMPLATE_CONTEXT_PROCESSORS", tuple(ctx_procs))
+
 
 def ModifyAvailableCommands():
   """Removes incompatible commands and installs replacements where possible."""
