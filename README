@@ -19,10 +19,12 @@ This project contains minor customisations to manage.py and settings.py that
 demonstrate how to integrate the helper with a Django project.
 
 To use the helper you have two choices:
+
 1) Copy the entire project provided with the helper and modify it to bootstrap
    your project.
 2) Copy the appengine_django application into your existing project and modify
    the settings appropriately.
+   
 Instructions for both cases are provided below.
 
 
@@ -79,10 +81,10 @@ Installing the helper into an existing project
 3) Edit the application line in app.yaml to match the name you registered your
    application under in the Admin Console.
 
-4) Add the following two lines to the top of manage.py
+4) Add the following two lines to the top of manage.py::
 
- from appengine_django import InstallAppengineHelperForDjango
- InstallAppengineHelperForDjango()
+       from appengine_django import InstallAppengineHelperForDjango
+       InstallAppengineHelperForDjango()
 
 5) If you have installed the Google App Engine SDK into your Python search path
    you may skip this step.
@@ -98,8 +100,9 @@ Installing the helper into an existing project
 6) Remove incompatible settings from your settings.py file.
 
    The helper can warn you about some settings that it knows to be
-   incompatible, you can see these warnings by running:
-    python manage.py diffsettings
+   incompatible, you can see these warnings by running::
+       
+       python manage.py diffsettings
 
    For the rest you'll just have to experiment by trial and error. The main
    problem here is usually loading middleware that attempts to import modules
