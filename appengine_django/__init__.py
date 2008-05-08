@@ -247,11 +247,14 @@ def CleanupDjangoSettings():
 
   # Remove incompatible middleware modules.
   mw_mods = list(getattr(settings, "MIDDLEWARE_CLASSES", ()))
+  disallowed_middleware_mods = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.doc.XViewMiddleware',)
   for modname in mw_mods[:]:
-    if modname.startswith("django."):
-      # TODO(mglb): This is probably overly broad, but it's the safest option
-      # until we have a list of known good django modules. At least the default
-      # four are known to cause problems.
+    if modname in disallowed_middleware_mods:
+      # Currently only the CommonMiddleware has been ported.  As other base modules 
+      # are converted, remove from the disallowed_middleware_mods tuple.
       mw_mods.remove(modname)
       logging.warn("Middleware module '%s' is not compatible. Removed!" %
                    modname)
@@ -345,5 +348,19 @@ def InstallAppengineHelperForDjango():
   PatchDjangoSerializationModules()
   CleanupDjangoSettings()
   ModifyAvailableCommands()
+  InstallGoogleSMTPConnection()
 
   logging.debug("Successfully loaded the Google App Engine Helper for Django.")
+
+
+def InstallGoogleSMTPConnection():
+  from appengine_django import mail as gmail
+  from django.core import mail
+  if VERSION >= (0, 97, None):
+    logging.debug("Installing Google Email Adapter for Django 0.97+")
+    mail.SMTPConnection = gmail.GoogleSMTPConnection
+  else:
+    logging.debug("Installing Google Email Adapter for Django 0.96")
+    mail.send_mass_mail = gmail.send_mass_mail
+  mail.mail_admins = gmail.mail_admins
+  mail.mail_managers = gmail.mail_managers
