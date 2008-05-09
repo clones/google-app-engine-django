@@ -10,8 +10,10 @@ The helper provides the following functionality:
 
   * The ability to use most manage.py commands
   * A BaseModel class that appears the same as the standard Django Model class.
-  * The ability to serialize and deserialize model instances to JSON, YAML and XML.
-  * Access to Django's test framework with a test datastore and support for fixtures.
+  * The ability to serialize and deserialize model instances to JSON, YAML and
+    XML.
+  * Access to Django's test framework with a test datastore and support for
+    fixtures.
 
 The helper is provided in the context of a blank Django project, very
 similar to what would be provided by the django-admin.py startproject command.
