@@ -222,6 +222,28 @@ class SerializationTest(unittest.TestCase):
               """pk: test\n"""
   }
 
+  # Lookup dict for the function.
+  SERIALIZED_WITH_NON_EXISTANT_PARENT = {
+      "json": """[{"pk": "ahhnb29nbGUtYXBwLWVuZ2luZS1kamFuZ29yIgsSBk1vZG"""
+              """VsQiIGcGFyZW50DAsSBk1vZGVsQSIEdGVzdAw", """
+              """"model": "tests.modela", "fields": """
+              """{"description": null}}]""",
+      "yaml": """- fields: {description: null}\n  """
+              """model: tests.modela\n  """
+              """pk: ahhnb29nbGUtYXBwLWVuZ2luZS1kamFuZ29yIgsSBk1"""
+              """vZGVsQiIGcGFyZW50DAsSBk1vZGVsQSIEdGVzdAw\n""",
+      "xml":  """<?xml version="1.0" encoding="utf-8"?>\n"""
+              """<django-objects version="1.0">\n"""
+              """<entity kind="tests.modela" key="ahhnb29nbGUtYXBwL"""
+              """WVuZ2luZS1kamFuZ29yIgsSBk1vZGVsQiIGcGFyZW50DA"""
+              """sSBk1vZGVsQSIEdGVzdAw">\n  """
+              """<key>tag:google-app-engine-django.gmail.com,"""
+              """2008-05-13:ModelA[ahhnb29nbGUtYXBwLWVuZ2luZS1kam"""
+              """FuZ29yIgsSBk1vZGVsQiIGcGFyZW50DAsSBk1vZGVsQSIEdGVzdAw"""
+              """]</key>\n  <property name="description" """
+              """type="null"></property>\n</entity>\n</django-objects>"""
+  }
+
   # The following functions are all expanded by the metaclass to be run once
   # for every registered Django serialization module.
 
@@ -252,6 +274,11 @@ class SerializationTest(unittest.TestCase):
     obj2 = ModelA(description="child object", key_name="child", parent=obj)
     obj2.put()
     self.doSerialisationTest(format, obj2, "parent", obj)
+
+  def runObjectWithNonExistantParentTest(self, format):
+    """Test deserialization of an object referencing a non-existant parent."""
+    self.doModelKeyDeserialisationReferenceTest(
+        self.SERIALIZED_WITH_NON_EXISTANT_PARENT, format)
 
   def runCreateKeyReferenceFromListTest(self, format):
     """Tests that a reference specified as a list in json/yaml can be loaded OK."""

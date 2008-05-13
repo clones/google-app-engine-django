@@ -75,6 +75,18 @@ except ImportError:
 
 Serializer = python.Serializer
 
+
+class FakeParent(object):
+  """Fake parent 'model' like object.
+
+  This class exists to allow a parent object to be provided to a new model
+  without having to load the parent instance itself.
+  """
+
+  def __init__(self, parent_key):
+    self._entity = parent_key
+
+
 def Deserializer(object_list, **options):
   """Deserialize simple Python objects back into Model instances.
 
@@ -89,13 +101,9 @@ def Deserializer(object_list, **options):
     key = resolve_key(Model._meta.module_name, d["pk"])
     if key.name():
       data["key_name"] = key.name()
+    parent = None
     if key.parent():
-      parent = db.get(key.parent())
-      if not parent:
-        raise base.DeserializationError(
-            "Cannot load entity '%s'. Parent '%s' cannot be found" %
-            (key, key.parent()))
-      data["parent"] = parent
+      parent = FakeParent(key.parent())
     m2m_data = {}
 
     # Handle each field
@@ -115,7 +123,15 @@ def Deserializer(object_list, **options):
                                           "unnamed key: '%s'" % field_value)
       else:
         data[field.name] = field.validate(field_value)
-    yield base.DeserializedObject(Model(**data), m2m_data)
+    # Create the new model instance with all it's data, but no parent.
+    object = Model(**data)
+    # Now add the parent into the hidden attribute, bypassing the type checks
+    # in the Model's __init__ routine.
+    object._parent = parent
+    # When the deserialized object is saved our replacement DeserializedObject
+    # class will set object._parent to force the real parent model to be loaded
+    # the first time it is referenced.
+    yield base.DeserializedObject(object, m2m_data)
 
 
 def resolve_key(model, key_data):

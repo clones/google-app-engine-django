@@ -187,15 +187,17 @@ def PatchDeserializedObjectClass():
   is not derived from the Django Model class and therefore must be called
   directly.
 
-  Only required for Django 0.97.
+  Additionally we need to clear the internal _parent attribute as it may
+  contain a FakeParent class that is used to deserialize instances without
+  needing to load the parent instance itself. See the PythonDeserializer for
+  more details.
   """
-  if VERSION < (0, 97, None):
-    return
   # This can't be imported until InstallAppengineDatabaseBackend has run.
   from django.core.serializers import base
   class NewDeserializedObject(base.DeserializedObject):
     def save(self, save_m2m=True):
       self.object.save()
+      self.object._parent = None
   base.DeserializedObject = NewDeserializedObject
   logging.debug("Replacement DeserializedObject class installed")
 

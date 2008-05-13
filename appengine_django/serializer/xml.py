@@ -30,6 +30,8 @@ from django.db import models
 from google.appengine.api import datastore_types
 from google.appengine.ext import db
 
+from python import FakeParent
+
 getInnerText = xml_serializer.getInnerText
 
 
@@ -104,13 +106,9 @@ class Deserializer(xml_serializer.Deserializer):
     key = db.Key(node.getAttribute("key"))
     if key.name():
       data["key_name"] = key.name()
+    parent = None
     if key.parent():
-      parent = db.get(key.parent())
-      if not parent:
-        raise base.DeserializationError("Cannot load entity '%s'. Parent "
-                                        "'%s' cannot be found" %
-                                        (key, key.parent()))
-      data["parent"] = parent
+      parent = FakeParent(key.parent())
     m2m_data = {}
 
     # Deseralize each field.
@@ -138,5 +136,12 @@ class Deserializer(xml_serializer.Deserializer):
       else:
         data[field.name] = field.validate(field_value)
 
-    # Return a DeserializedObject so that the m2m data has a place to live.
-    return base.DeserializedObject(Model(**data), m2m_data)
+    # Create the new model instance with all it's data, but no parent.
+    object = Model(**data)
+    # Now add the parent into the hidden attribute, bypassing the type checks
+    # in the Model's __init__ routine.
+    object._parent = parent
+    # When the deserialized object is saved our replacement DeserializedObject
+    # class will set object._parent to force the real parent model to be loaded
+    # the first time it is referenced.
+    return base.DeserializedObject(object, m2m_data)
