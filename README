@@ -9,11 +9,15 @@ detailed usage instructions.
 The helper provides the following functionality:
 
   * The ability to use most manage.py commands
+    - Additional manage.py commands (update, rollback, and vacuum_indexes) that
+      operate identically to the appcfg.py equivalents.
   * A BaseModel class that appears the same as the standard Django Model class.
   * The ability to serialize and deserialize model instances to JSON, YAML and
     XML.
   * Access to Django's test framework with a test datastore and support for
     fixtures.
+  * The ability to send email via the App Engine mail API using the standard
+    Django mail functions.
 
 The helper is provided in the context of a blank Django project, very
 similar to what would be provided by the django-admin.py startproject command.
@@ -26,7 +30,7 @@ To use the helper you have two choices:
    your project.
 2) Copy the appengine_django application into your existing project and modify
    the settings appropriately.
-   
+
 Instructions for both cases are provided below.
 
 
@@ -54,16 +58,20 @@ Using the helper to bootstrap a new project
 2) Edit the application line in app.yaml to match the name you registered your
    application under in the Admin Console.
 
-3) If you have installed the Google App Engine SDK into your Python search path
-   you may skip this step.
+3) If you have installed the Google App Engine SDK using the Windows or MacOS
+   installers provided by Google you may skip this step.
 
-   Copy (or create a symlink) from the location of the SDK to the
-   google_appengine directory inside your project. E.g:
+   Copy (or create a symlink) from the location of the extracted SDK zipfile to
+   the google_appengine directory inside your project. E.g:
 
    ln -s /home/me/google_appengine /home/me/myproject/google_appengine
 
-   Note: See KNOWN_ISSUES for a note about uploading your application when
-         using this setup.
+   If you like to stay up to date see the 'SDK via SVN' section below for an
+   alternative setup.
+
+   Note: You must ensure you are using at least version 1.0.2 of the App Engine
+   SDK and have that you have no removed the skip_files entry in app.yaml or
+   the SDK will be uploaded alongside your project.
 
 4) Run manage.py to start a new application for your code:
 
@@ -88,22 +96,31 @@ Installing the helper into an existing project
        from appengine_django import InstallAppengineHelperForDjango
        InstallAppengineHelperForDjango()
 
-5) If you have installed the Google App Engine SDK into your Python search path
-   you may skip this step.
+5) If you have installed the Google App Engine SDK using the Windows or MacOS
+   installers provided by Google you may skip this step.
 
    Copy (or create a symlink) from the location of the SDK to the
    google_appengine directory inside your project. E.g:
 
    ln -s /home/me/google_appengine /home/me/myproject/google_appengine
 
-   Note: See KNOWN_ISSUES for a note about uploading your application when
-         using this setup.
+   Now you need to edit app.yaml and add a skip_files entry that tells the SDK
+   to ignore the google_appengine directory when uploading your project. See
+   the app.yaml from the downloaded helper for an example. If you do not add
+   this entry the entire SDK will be uploaded alongside your application.
+
+   If you like to stay up to date see the 'SDK via SVN' section below for an
+   alternative setup.
+
+   Note: You must ensure you are using at least version 1.0.2 of the App Engine
+   SDK. Earlier versions had a bug that prevented skip_files from functioning
+   correctly.
 
 6) Remove incompatible settings from your settings.py file.
 
    The helper can warn you about some settings that it knows to be
    incompatible, you can see these warnings by running::
-       
+
        python manage.py diffsettings
 
    For the rest you'll just have to experiment by trial and error. The main
@@ -112,6 +129,24 @@ Installing the helper into an existing project
 
 7) Port your models and code over to the appengine_django.model.BaseModel
    class.
+
+
+SDK via SVN
+-----------
+
+If you are using SVN to manage your project and you would like to keep up to
+date with the latest SDK without having to download and install it regularly
+you can use an svn:external to include the SDK in our project.
+
+Once you have commited the basic structure of your project to your repository
+change to the base directory and add the following line to the svn:externals
+property us svn propset or svn propedit.
+
+google_appengine http://googleappengine.googlecode.com/svn/trunk/
+
+Then run svn update and a copy of the SDK will be installed into the
+google_appengine subdirectory. This copy of the SDK will be updated with the
+latest changes from the Google Code repository every time you run svn update.
 
 
 Contributing to the helper
