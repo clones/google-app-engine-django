@@ -49,20 +49,35 @@ PARENT_DIR = os.path.dirname(DIR_PATH)
 # Add this project to the start of sys path to enable direct imports.
 sys.path = [PARENT_DIR,] + sys.path
 
-# Try to import the appengine code, if it fails check for a local copy of
-# the SDK to add to the sys.path
+# Try to import the appengine code from the system path.
 try:
   from google.appengine.api import apiproxy_stub_map
 except ImportError, e:
+  # Not on the system path. Build a list of alternative paths where it may be.
+  # First look within the project for a local copy, then look for where the Mac
+  # OS SDK installs it.
+  paths = [PARENT_DIR, '/usr/local']
+  # Then if on windows, look for where the Windows SDK installed it.
+  try:
+    import win32api
+    ROOT_PATH = os.path.dirname(win32api.GetWindowsDirectory())
+    paths.append(os.path.join(ROOT_PATH, 'Program Files', 'Google'))
+  except ImportError, e:
+    # Not windows.
+    pass
+  # Loop through all possible paths and look for the SDK dir.
   SDK_PATH = None
-  paths = [os.path.join(PARENT_DIR, 'google_appengine'),
-           '/usr/local/google_appengine']
-  for sdk_path in paths:
+  for base_path in paths:
+    sdk_path = os.path.join(base_path, 'google_appengine')
     if os.path.exists(sdk_path):
       SDK_PATH = sdk_path
       break
   if SDK_PATH is None:
-    raise
+    # The SDK could not be found in any known location.
+    sys.stderr.write("The Google App Engine SDK could not be found!\n")
+    sys.stderr.write("See README for installation instructions.\n")
+    sys.exit(1)
+  # Add the SDK and the libraries within it to the system path.
   EXTRA_PATHS = [
       SDK_PATH,
       os.path.join(SDK_PATH, 'lib', 'django'),
