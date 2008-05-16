@@ -5,3 +5,24 @@ Fri 16 May 2008
   'google_appengine' so that it is automatically ignored without neding to
   modify skip_files in app.yaml. 'google_appengine' will continue to work for
   the next few releases.
+
+* Major improvements to SDK location detection code. When running on Windows or
+  Mac OS with the SDK installed via the Google supplied installers the SDK will
+  be automatically detected and added to Python's path.
+
+* The helper now detects, warns and removes Context Processors that are not
+  compatible with Google App Engine.
+
+* The Django mail API is now monkey patched to allow email to be sent via the
+  App Engine Mail API using the standard Django mail functions. This code does
+  not yet support sending multipart / HTML emails.
+
+  The patch for this functionality was supplied by Ryan Gates.
+
+* Added 'update', 'rollback' and 'vacuum_indexes' from appcfg.py to the list of
+  commands available via manage.py when using Django 0.97. You will still have
+  to uses appcfg.py directly if you are using Django 0.96.
+
+* Improved the deserialization routines to deserialize parent references
+  without needing to instantiate the parent instance. This allows instances
+  with non-existant parents to be succesfully loaded.
