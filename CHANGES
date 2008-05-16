@@ -1,0 +1,7 @@
+Fri 16 May 2008
+===============
+
+* Changed location of local SDK directory to '.google_appengine' instead of
+  'google_appengine' so that it is automatically ignored without neding to
+  modify skip_files in app.yaml. 'google_appengine' will continue to work for
+  the next few releases.

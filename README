@@ -62,16 +62,12 @@ Using the helper to bootstrap a new project
    installers provided by Google you may skip this step.
 
    Copy (or create a symlink) from the location of the extracted SDK zipfile to
-   the google_appengine directory inside your project. E.g:
+   the '.google_appengine' directory inside your project. E.g:
 
-   ln -s /home/me/google_appengine /home/me/myproject/google_appengine
+   ln -s /home/me/google_appengine /home/me/myproject/.google_appengine
 
    If you like to stay up to date see the 'SDK via SVN' section below for an
    alternative setup.
-
-   Note: You must ensure you are using at least version 1.0.2 of the App Engine
-   SDK and have that you have no removed the skip_files entry in app.yaml or
-   the SDK will be uploaded alongside your project.
 
 4) Run manage.py to start a new application for your code:
 
@@ -100,21 +96,12 @@ Installing the helper into an existing project
    installers provided by Google you may skip this step.
 
    Copy (or create a symlink) from the location of the SDK to the
-   google_appengine directory inside your project. E.g:
+   '.google_appengine 'directory inside your project. E.g:
 
-   ln -s /home/me/google_appengine /home/me/myproject/google_appengine
-
-   Now you need to edit app.yaml and add a skip_files entry that tells the SDK
-   to ignore the google_appengine directory when uploading your project. See
-   the app.yaml from the downloaded helper for an example. If you do not add
-   this entry the entire SDK will be uploaded alongside your application.
+   ln -s /home/me/google_appengine /home/me/myproject/.google_appengine
 
    If you like to stay up to date see the 'SDK via SVN' section below for an
    alternative setup.
-
-   Note: You must ensure you are using at least version 1.0.2 of the App Engine
-   SDK. Earlier versions had a bug that prevented skip_files from functioning
-   correctly.
 
 6) Remove incompatible settings from your settings.py file.
 
@@ -142,10 +129,10 @@ Once you have commited the basic structure of your project to your repository
 change to the base directory and add the following line to the svn:externals
 property us svn propset or svn propedit.
 
-google_appengine http://googleappengine.googlecode.com/svn/trunk/
+.google_appengine http://googleappengine.googlecode.com/svn/trunk/
 
 Then run svn update and a copy of the SDK will be installed into the
-google_appengine subdirectory. This copy of the SDK will be updated with the
+'.google_appengine' subdirectory. This copy of the SDK will be updated with the
 latest changes from the Google Code repository every time you run svn update.
 
 
