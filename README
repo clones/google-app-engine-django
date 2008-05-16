@@ -48,7 +48,6 @@ the SVN repository with the following command:
 svn co http://google-app-engine-django.googlecode.com/svn/trunk/ \
   appengine_helper_for_django
 
-
 Using the helper to bootstrap a new project
 -------------------------------------------
 
@@ -157,6 +156,10 @@ address to submit your patch as you used to sign the CLA.
 
 Reporting Bugs and Requesting Features
 --------------------------------------
+
+Please see the KNOWN_ISSUES file and the existing list of issues at
+http://code.google.com/p/google-app-engine-django/issues to see if your problem
+has already been reported.
 
 If you find a bug or would like to request a feature you may do so at the
 Google Code issue tracker for this project:
