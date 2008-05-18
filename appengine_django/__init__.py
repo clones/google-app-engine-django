@@ -92,7 +92,7 @@ except ImportError, e:
       os.path.join(SDK_PATH, 'lib', 'webob'),
       os.path.join(SDK_PATH, 'lib', 'yaml', 'lib'),
   ]
-  sys.path.extend(EXTRA_PATHS)
+  sys.path = EXTRA_PATHS + sys.path
   from google.appengine.api import apiproxy_stub_map
 
 
