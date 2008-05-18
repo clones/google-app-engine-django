@@ -136,6 +136,14 @@ class BaseModel(db.Model):
   All models used in the application should derive from this class.
   """
   __metaclass__ = PropertiedClassWithDjango
+ 
+  def __eq__(self, other):
+    if not isinstance(other, self.__class__):
+      return False
+    return self._get_pk_val() == other._get_pk_val()
+
+  def __ne__(self, other):
+    return not self.__eq__(other)
 
   def _get_pk_val(self):
     """Return the string representation of the model's key"""
