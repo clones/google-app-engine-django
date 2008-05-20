@@ -278,7 +278,6 @@ def CleanupDjangoSettings():
   mw_mods = list(getattr(settings, "MIDDLEWARE_CLASSES", ()))
   disallowed_middleware_mods = (
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',)
   for modname in mw_mods[:]:
     if modname in disallowed_middleware_mods:
@@ -291,22 +290,15 @@ def CleanupDjangoSettings():
 
   # Remove incompatible application modules
   app_mods = list(getattr(settings, "INSTALLED_APPS", ()))
+  disallowed_apps = (
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',)
   for app in app_mods[:]:
-    if app.startswith("django."):
-      # TODO(mglb): Again this is probably overly broad.
+    if app in disallowed_apps:
       app_mods.remove(app)
       logging.warn("Application module '%s' is not compatible. Removed!" % app)
   setattr(settings, "INSTALLED_APPS", tuple(app_mods))
-
-  # Remove incompatible context processors.
-  bad_processors = ('django.core.context_processors.auth',)
-  ctx_procs = list(getattr(settings, "TEMPLATE_CONTEXT_PROCESSORS", ()))
-  for proc in ctx_procs[:]:
-    if proc in bad_processors:
-      ctx_procs.remove(proc)
-      logging.warn("Template Context Processor '%s' is incompatible. Removed!"
-                   % proc)
-  setattr(settings, "TEMPLATE_CONTEXT_PROCESSORS", tuple(ctx_procs))
 
 
 def ModifyAvailableCommands():
@@ -378,6 +370,7 @@ def InstallAppengineHelperForDjango():
   CleanupDjangoSettings()
   ModifyAvailableCommands()
   InstallGoogleSMTPConnection()
+  InstallAuthentication()
 
   logging.debug("Successfully loaded the Google App Engine Helper for Django.")
 
@@ -393,3 +386,20 @@ def InstallGoogleSMTPConnection():
     mail.send_mass_mail = gmail.send_mass_mail
   mail.mail_admins = gmail.mail_admins
   mail.mail_managers = gmail.mail_managers
+
+
+def InstallAuthentication():
+  logging.debug("Installing authentication framework")
+  from appengine_django.auth import models as helper_models
+  from django.contrib.auth import models
+  models.User = helper_models.User
+  models.Group = helper_models.Group
+  models.Permission = helper_models.Permission
+  models.Message = helper_models.Message
+  from django.contrib.auth import middleware as django_middleware
+  from appengine_django.auth.middleware import AuthenticationMiddleware
+  django_middleware.AuthenticationMiddleware = AuthenticationMiddleware
+  if VERSION >= (0, 97, None):
+    from appengine_django.auth import tests
+    from django.contrib.auth import tests as django_tests
+    django_tests.__doc__ = tests.__doc__

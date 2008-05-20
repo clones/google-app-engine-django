@@ -1,3 +1,17 @@
+Tue 20 May 2008
+===============
+
+* Added an App Engine compatible implementation of the Django authentication
+  framework. This only works for Users at the present time, Groups and
+  Permissions are not yet supported.
+
+  The patch for this functionality was supplied by Andi Albrecht.
+
+* Added equality and inequality comparision functions to BaseModel.
+
+  The patch for this functionality was supplied by Andi Albrecht.
+
+
 Fri 16 May 2008
 ===============
 

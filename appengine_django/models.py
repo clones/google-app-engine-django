@@ -15,8 +15,11 @@
 # limitations under the License.
 
 import sys
+import types
+
 from google.appengine.ext import db
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.fields import Field
 from django.db.models.options import Options
 from django.db.models.loading import register_models, get_model
@@ -106,6 +109,8 @@ class PropertiedClassWithDjango(db.PropertiedClass):
     new_class._meta = ModelOptions(new_class)
     new_class.objects = ModelManager(new_class)
     new_class._default_manager = new_class.objects
+    new_class.DoesNotExist = types.ClassType('DoesNotExist',
+                                             (ObjectDoesNotExist,), {})
 
     m = get_model(new_class._meta.app_label, name, False)
     if m:
