@@ -92,7 +92,11 @@ except ImportError, e:
       os.path.join(SDK_PATH, 'lib', 'webob'),
       os.path.join(SDK_PATH, 'lib', 'yaml', 'lib'),
   ]
-  sys.path = EXTRA_PATHS + sys.path
+  # Add SDK paths at the start of sys.path, but after the local directory which
+  # was added to the start of sys.path on line 50 above. The local directory
+  # must come first to allow the local imports to override the SDK and
+  # site-packages directories.
+  sys.path = sys.path[0:1] + EXTRA_PATHS + sys.path[1:]
   from google.appengine.api import apiproxy_stub_map
 
 
