@@ -53,7 +53,6 @@ class User(BaseModel):
   is_staff = db.BooleanProperty(default=False, required=True)
   is_active = db.BooleanProperty(default=True, required=True)
   is_superuser = db.BooleanProperty(default=False, required=True)
-  is_staff = db.BooleanProperty(default=False, required=True)
   last_login = db.DateTimeProperty(auto_now_add=True, required=True)
   date_joined = db.DateTimeProperty(auto_now_add=True, required=True)
   groups = EmptyManager()
