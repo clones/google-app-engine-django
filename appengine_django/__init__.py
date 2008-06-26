@@ -392,17 +392,20 @@ def InstallGoogleSMTPConnection():
 
 
 def InstallAuthentication():
-  logging.debug("Installing authentication framework")
-  from appengine_django.auth import models as helper_models
-  from django.contrib.auth import models
-  models.User = helper_models.User
-  models.Group = helper_models.Group
-  models.Permission = helper_models.Permission
-  models.Message = helper_models.Message
-  from django.contrib.auth import middleware as django_middleware
-  from appengine_django.auth.middleware import AuthenticationMiddleware
-  django_middleware.AuthenticationMiddleware = AuthenticationMiddleware
-  if VERSION >= (0, 97, None):
-    from appengine_django.auth import tests
-    from django.contrib.auth import tests as django_tests
-    django_tests.__doc__ = tests.__doc__
+  try:
+    from appengine_django.auth import models as helper_models
+    from django.contrib.auth import models
+    models.User = helper_models.User
+    models.Group = helper_models.Group
+    models.Permission = helper_models.Permission
+    models.Message = helper_models.Message
+    from django.contrib.auth import middleware as django_middleware
+    from appengine_django.auth.middleware import AuthenticationMiddleware
+    django_middleware.AuthenticationMiddleware = AuthenticationMiddleware
+    if VERSION >= (0, 97, None):
+      from appengine_django.auth import tests
+      from django.contrib.auth import tests as django_tests
+      django_tests.__doc__ = tests.__doc__
+    logging.debug("Installing authentication framework")
+  except ImportError:
+    logging.debug("No Django authentication support available")
