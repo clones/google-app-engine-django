@@ -51,6 +51,14 @@ the SVN repository with the following command:
 svn co http://google-app-engine-django.googlecode.com/svn/trunk/ \
   appengine_helper_for_django
 
+Required Software
+-----------------
+
+You will need the Google App Engine SDK and its dependencies installed on your
+computer. Additionally if you are developing on a Windows machine you will need
+to install the Python for Windows extensions from
+http://sourceforge.net/projects/pywin32/
+
 Using the helper to bootstrap a new project
 -------------------------------------------
 
@@ -129,7 +137,7 @@ you can use an svn:external to include the SDK in our project.
 
 Once you have commited the basic structure of your project to your repository
 change to the base directory and add the following line to the svn:externals
-property us svn propset or svn propedit.
+property using svn propset or svn propedit.
 
 .google_appengine http://googleappengine.googlecode.com/svn/trunk/
 

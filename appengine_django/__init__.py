@@ -61,9 +61,12 @@ except ImportError, e:
            '/usr/local/google_appengine']
   # Then if on windows, look for where the Windows SDK installed it.
   try:
-    import win32api
-    ROOT_PATH = os.path.dirname(win32api.GetWindowsDirectory())
-    paths.append(os.path.join(ROOT_PATH, 'Program Files', 'Google',
+    from win32com.shell import shell
+    from win32com.shell import shellcon
+    id_list = shell.SHGetSpecialFolderLocation(
+        0, shellcon.CSIDL_PROGRAM_FILES)
+    program_files = shell.SHGetPathFromIDList(id_list)
+    paths.append(os.path.join(program_files, 'Google',
                               'google_appengine'))
   except ImportError, e:
     # Not windows.
