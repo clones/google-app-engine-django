@@ -318,8 +318,15 @@ def ModifyAvailableCommands():
     management.DEFAULT_ACTION_MAPPING['flush'] = flush.v096_command
     from appengine_django.management.commands import reset
     management.DEFAULT_ACTION_MAPPING['reset'] = reset.v096_command
+    # startapp command for django 0.96 
+    management.PROJECT_TEMPLATE_DIR = os.path.join(__path__[0], 'conf',
+                                                   '%s_template')
   else:
-    management.get_commands()
+    project_directory = os.path.join(__path__[0], "../")
+    management.get_commands(project_directory=project_directory)
+    # Replace startapp command which is set by previous call to get_commands().
+    from appengine_django.management.commands.startapp import ProjectCommand
+    management._commands['startapp'] = ProjectCommand(project_directory) 
     RemoveCommands(management._commands)
     # Django 0.97 will install the replacements automatically.
   logging.debug("Removed incompatible Django manage.py commands")
