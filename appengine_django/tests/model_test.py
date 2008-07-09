@@ -19,6 +19,7 @@
 
 import unittest
 
+from django import VERSION
 from django.db.models import get_models
 
 from google.appengine.ext import db
@@ -62,9 +63,13 @@ class ModelTest(unittest.TestCase):
 
   def testDjangoModelFields(self):
     """Tests that a combined model class has (faked) Django fields."""
-    self.assertEqual(3, len(TestModelWithProperties._meta.fields))
+    if VERSION >= (0, 97, None):
+      fields = TestModelWithProperties._meta.local_fields
+    else:
+      fields = TestModelWithProperties._meta.fields
+    self.assertEqual(3, len(fields))
     # Check each fake field has the minimal properties that Django needs.
-    for field in TestModelWithProperties._meta.fields:
+    for field in fields:
       # The Django serialization code looks for rel to determine if the field
       # is a relationship/reference to another model.
       self.assert_(hasattr(field, "rel"))

@@ -19,6 +19,7 @@ import types
 
 from google.appengine.ext import db
 
+from django import VERSION
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.fields import Field
 from django.db.models.options import Options
@@ -132,8 +133,11 @@ class PropertiedClassWithDjango(db.PropertiedClass):
       # This metaclass only acts on subclasses of BaseModel.
       return
 
-    cls._meta.fields = [PropertyWrapper(p) for p in cls._properties.values()]
-
+    fields = [PropertyWrapper(p) for p in cls._properties.values()]
+    if VERSION >= (0, 97, None):
+      cls._meta.local_fields = fields
+    else:
+      cls._meta.fields = fields
 
 class BaseModel(db.Model):
   """Combined appengine and Django model.
