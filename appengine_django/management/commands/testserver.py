@@ -63,6 +63,13 @@ class Command(BaseCommand):
     new_args.extend(['--history_path', history_path])
     new_args.extend([os.getcwdu()])
 
+    # Add email settings
+    from django.conf import settings
+    new_args.extend(['--smtp_host', settings.EMAIL_HOST,
+                     '--smtp_port', str(settings.EMAIL_PORT),
+                     '--smtp_user', settings.EMAIL_HOST_USER,
+                     '--smtp_password', settings.EMAIL_HOST_PASSWORD])
+
     # Start the test dev_appserver.
     from google.appengine.tools import dev_appserver_main
     dev_appserver_main.main(new_args)

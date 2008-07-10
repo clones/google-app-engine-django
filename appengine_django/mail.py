@@ -39,18 +39,6 @@ except ImportError:
 class GoogleSMTPConnection(SMTPConnection):
   def __init__(self, host=None, port=None, username=None, password=None,
                use_tls=None, fail_silently=False):
-    if (host):
-      logging.warn("'host' parameter is ignored when running "
-                   "in Google App Engine")
-    if (port):
-      logging.warn("'port' parameter is ignored when running in "
-                   "Google App Engine")
-    if (username):
-      logging.warn("'username' parameter is ignored when running "
-                   "in Google App Engine")
-    if (password):
-      logging.warn("'password' parameter is ignored when running "
-                   "in Google App Engine")
     self.use_tls = (use_tls is not None) and use_tls or settings.EMAIL_USE_TLS
     self.fail_silently = fail_silently
     self.connection = None
