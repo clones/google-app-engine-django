@@ -49,7 +49,7 @@ def start_dev_appserver():
       print "Error: '%s' is not a valid port number." % port
       sys.exit(1)
   else:
-    addr, port = None, None
+    addr, port = None, "8000"
   if addr:
     args.extend(["--address", addr])
   if port:
