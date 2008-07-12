@@ -215,6 +215,17 @@ def InstallDjangoModuleReplacements():
   from django.contrib.sessions import backends
   backends.__path__.append(os.path.join(orig_path, 'backends'))
 
+  # Replace incompatible dispatchers.
+  import django.core.signals
+  import django.db
+  import django.dispatch.dispatcher
+
+  # Rollback occurs automatically on Google App Engine. Disable the Django
+  # rollback handler.
+  django.dispatch.dispatcher.disconnect(
+      django.db._rollback_on_exception,
+      django.core.signals.got_request_exception)
+
 
 def PatchDjangoSerializationModules():
   """Monkey patches the Django serialization modules.
