@@ -188,6 +188,21 @@ def PatchTestDBCreationFunctions():
   logging.debug("Installed test database create/destroy functions")
 
 
+def InstallGoogleMemcache():
+  """Installs the Google memcache into Django.
+
+  By default django tries to import standard memcache module.
+  Because appengine memcache is API compatible with Python memcache module,
+  we can trick Django to think it is installed and to use it.
+  
+  Now you can use CACHE_BACKEND = 'memcached://' in settings.py. IP address
+  and port number are not required.
+  """
+  from google.appengine.api import memcache
+  sys.modules['memcache'] = memcache
+  logging.debug("Installed App Engine memcache backend")
+
+
 def PatchDjangoSerializationModules():
   """Monkey patches the Django serialization modules.
 
@@ -376,6 +391,7 @@ def InstallAppengineHelperForDjango():
   LoadAppengineEnvironment()
   InstallReplacementImpModule()
   InstallAppengineDatabaseBackend()
+  InstallGoogleMemcache()
   PatchDjangoSerializationModules()
   CleanupDjangoSettings()
   ModifyAvailableCommands()
