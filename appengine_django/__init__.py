@@ -209,11 +209,14 @@ def InstallDjangoModuleReplacements():
   # Replace the session module with a partial replacement overlay using
   # __path__ so that portions not replaced will fall through to the original
   # implementation. 
-  from django.contrib import sessions
-  orig_path = sessions.__path__[0]
-  sessions.__path__.insert(0, os.path.join(DIR_PATH, 'sessions'))
-  from django.contrib.sessions import backends
-  backends.__path__.append(os.path.join(orig_path, 'backends'))
+  try:
+    from django.contrib import sessions
+    orig_path = sessions.__path__[0]
+    sessions.__path__.insert(0, os.path.join(DIR_PATH, 'sessions'))
+    from django.contrib.sessions import backends
+    backends.__path__.append(os.path.join(orig_path, 'backends'))
+  except ImportError:
+    logging.debug("No Django session support available")
 
   # Replace incompatible dispatchers.
   import django.core.signals
