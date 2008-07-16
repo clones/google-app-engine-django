@@ -466,6 +466,9 @@ def InstallAuthentication():
     from django.contrib.auth import middleware as django_middleware
     from appengine_django.auth.middleware import AuthenticationMiddleware
     django_middleware.AuthenticationMiddleware = AuthenticationMiddleware
+    from django.contrib.auth import decorators as django_decorators
+    from appengine_django.auth.decorators import login_required
+    django_decorators.login_required = login_required
     if VERSION >= (0, 97, None):
       from appengine_django.auth import tests
       from django.contrib.auth import tests as django_tests

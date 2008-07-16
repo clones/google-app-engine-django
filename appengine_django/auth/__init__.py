@@ -20,7 +20,6 @@ Limitations:
  - all user permissions methods are not available (requires contenttypes)
 """
 
-from django.http import HttpResponseRedirect
 from django.template import Node
 
 from google.appengine.api import users
@@ -28,18 +27,6 @@ from google.appengine.ext.webapp import template
 
 register = template.create_template_register()
 template.register_template_library("appengine_django.auth")
-
-
-def login_required(function):
-  """Implementation of Django's login_required decorator.
-  
-  The login redirect URL is always set to request.path
-  """
-  def login_required_wrapper(request, *args, **kw):
-    if request.user.is_authenticated():
-      return function(request, *args, **kw)
-    return HttpResponseRedirect(users.create_login_url(request.path))
-  return login_required_wrapper
 
 
 class AuthLoginUrlsNode(Node):
