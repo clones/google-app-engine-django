@@ -21,8 +21,11 @@ import unittest
 
 from django import VERSION
 from django.db.models import get_models
+from django import newforms as forms
 
+from google.appengine.ext.db import djangoforms
 from google.appengine.ext import db
+
 from appengine_django.models import BaseModel
 from appengine_django.models import ModelManager
 from appengine_django.models import ModelOptions
@@ -113,3 +116,7 @@ class ModelTest(unittest.TestCase):
     self.assert_(pk)
     new_obj = RegistrationTestModel.get(pk)
     self.assertEqual(obj.key(), new_obj.key())
+
+  def testModelFormPatched(self):
+    """Tests that the Django ModelForm is being successfully patched."""
+    self.assertEqual(djangoforms.ModelForm, forms.ModelForm)
