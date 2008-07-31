@@ -158,6 +158,14 @@ class BaseModel(db.Model):
     """Return the string representation of the model's key"""
     return unicode(self.key())
 
+  def __repr__(self):
+    # Returns a string representation that can be used to construct an
+    # equivalent object. First, creates a dictionary of property names and
+    # values. Note that property values, not property objects, has to be passed
+    # in to constructor.
+    d = dict([(k, self.__getattribute__(k)) for k in self.properties()])
+    return "%s(**%s)" % (self.__class__.__name__, repr(d))
+
 
 class RegistrationTestModel(BaseModel):
   """Used to check registration with Django is working correctly.
