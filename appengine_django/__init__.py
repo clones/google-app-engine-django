@@ -60,6 +60,10 @@ except ImportError, e:
            os.path.join(PARENT_DIR, 'google_appengine'),
            '/usr/local/google_appengine']
   # Then if on windows, look for where the Windows SDK installed it.
+  for path in os.environ.get('PATH', '').split(';'):
+    path = path.rstrip('\\')
+    if path.endswith('google_appengine'):
+      paths.append(path)
   try:
     from win32com.shell import shell
     from win32com.shell import shellcon
