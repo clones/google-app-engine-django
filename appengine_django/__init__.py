@@ -481,6 +481,7 @@ def InstallAuthentication():
       from appengine_django.auth import tests
       from django.contrib.auth import tests as django_tests
       django_tests.PasswordResetTest = None
+      django_tests.__test__ = {}
       django_tests.__doc__ = tests.__doc__
     logging.debug("Installing authentication framework")
   except ImportError:

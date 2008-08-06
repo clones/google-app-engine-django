@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
+BASIC_TESTS = """
 >>> from google.appengine.api import users
 >>> from models import User, AnonymousUser
 >>> appengine_user = users.User("test@example.com")
@@ -54,3 +54,5 @@ False
 
 
 """
+
+__test__ = {'BASIC_TESTS': BASIC_TESTS}
