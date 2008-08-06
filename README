@@ -21,6 +21,9 @@ The helper provides the following functionality:
   * An App Engine compatible implementation of the Django authentication
     framework. Only users are supported at this time. Group and Permission
     support is not implemented.
+  * Support for the Django memcache cache backend module.
+  * Support for the db and cache session backed modules when using Django
+    1.0alpha.
 
 The helper is provided in the context of a blank Django project, very
 similar to what would be provided by the django-admin.py startproject command.

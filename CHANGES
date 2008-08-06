@@ -1,3 +1,31 @@
+Wed 6 August 2008
+=================
+
+This is the last version of the Google App Engine Helper for Django that will
+support Django 0.96. Future development of the helper will be targetted for the
+upcoming 1.0 release of Django.
+
+* Improved SDK detection on Windows by looking at both the PATH variable that
+  may be set by the installer and using the win32api module (if available) to
+  look for the SDK in the default Program Files location.
+* Replaced the startapp command with a version that installs an App Engine
+  Compatible application skeleton. Patch contributed by Andi Albrecht.
+* Changed the default runserver port to 8000 to match standard Django
+  behaviour. Path contributed by Waldemar Kornewald.
+* Email server settings from the Django settings file are provided to the App
+  Engine Mail API. Patch contributed by Waldemar Kornewald.
+* Added support for the Django memcache cache backend. Patch contributed by
+  Jonca Rafal.
+* Added support for the Django session middle with db and cache backends for
+  Django 1.0alpha only. Patches contributed by Jonca Rafal and Waldemar
+  Kornewald.
+* Moved the Django compatible login_required decorator to the standard Django
+  location. Patch contributed by Andi Albrecht.
+* Replaced the Django ModelForm class with the App Engine ModelForm class.
+* Added a repr implementation for the BaseModel class.
+* Many minor improvements to increase robustness and avoid errors if portions
+  of Django are not present.
+
 Tue 20 May 2008
 ===============
 
