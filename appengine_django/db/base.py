@@ -21,6 +21,7 @@ import os
 
 from appengine_django import appid
 from appengine_django import have_appserver
+from appengine_django.db.creation import DatabaseCreation
 
 
 try:
@@ -34,7 +35,6 @@ except ImportError:
   BaseDatabaseWrapper = local
   BaseDatabaseFeatures = object
   BaseDatabaseOperations = object
-
 
 
 def get_datastore_paths():
@@ -112,27 +112,12 @@ class DatabaseWrapper(BaseDatabaseWrapper):
   by the appengine libraries if they have not already been initialised by an
   appserver.
   """
-  features = DatabaseFeatures()
-  ops = DatabaseOperations()
-  # 1.0 expects creation to be on the connection object
-  class creation(object):
-    @classmethod
-    def create_test_db(cls, *args, **kw):
-      """Destroys the test datastore. A new store will be recreated on demand"""
-      cls.destroy_test_db()
-      # Ensure the new store that is created uses the test datastore.
-      from django.db import connection
-      connection.use_test_datastore = True
-      connection.flush()
-
-    @classmethod
-    def destroy_test_db(cls, *args, **kw):
-      """Destroys the test datastore files."""
-      destroy_datastore(*get_test_datastore_paths())
-      logging.debug("Destroyed test datastore")
 
   def __init__(self, *args, **kwargs):
     super(DatabaseWrapper, self).__init__(*args, **kwargs)
+    self.features = DatabaseFeatures()
+    self.ops = DatabaseOperations()
+    self.creation = DatabaseCreation(self)
     self.use_test_datastore = kwargs.get("use_test_datastore", False)
     self.test_datastore_inmemory = kwargs.get("test_datastore_inmemory", True)
     if have_appserver:
