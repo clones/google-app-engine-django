@@ -18,20 +18,8 @@
 import logging
 
 from appengine_django.db.base import DatabaseWrapper
-from appengine_django.db.base import destroy_datastore
-from appengine_django.db.base import get_test_datastore_paths
+
+create_test_db = DatabaseWrapper.creation.create_test_db
+destroy_test_db = DatabaseWrapper.creattion.destroy_test_db
 
 
-def create_test_db(*args, **kw):
-  """Destroys the test datastore. A new store will be recreated on demand"""
-  destroy_test_db()
-  # Ensure the new store that is created uses the test datastore.
-  from django.db import connection
-  connection.use_test_datastore = True
-  connection.flush()
-
-
-def destroy_test_db(*args, **kw):
-  """Destroys the test datastore files."""
-  destroy_datastore(*get_test_datastore_paths())
-  logging.debug("Destroyed test datastore")
