@@ -22,8 +22,7 @@ The helper provides the following functionality:
     framework. Only users are supported at this time. Group and Permission
     support is not implemented.
   * Support for the Django memcache cache backend module.
-  * Support for the db and cache session backed modules when using Django
-    1.0alpha.
+  * Support for the db and cache session backed modules.
 
 The helper is provided in the context of a blank Django project, very
 similar to what would be provided by the django-admin.py startproject command.
@@ -54,6 +53,7 @@ the SVN repository with the following command:
 svn co http://google-app-engine-django.googlecode.com/svn/trunk/ \
   appengine_helper_for_django
 
+
 Required Software
 -----------------
 
@@ -61,6 +61,12 @@ You will need the Google App Engine SDK and its dependencies installed on your
 computer. Additionally if you are developing on a Windows machine you will need
 to install the Python for Windows extensions from
 http://sourceforge.net/projects/pywin32/
+
+This version of the helper requires Django 1.0beta_1 or greater. If you would
+prefer to use the stable version of Django (0.96) that is bundled with the App
+Engine SDK then you can download revision 53 or earlier of the helper from the
+address in the previous section.
+
 
 Using the helper to bootstrap a new project
 -------------------------------------------

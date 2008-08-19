@@ -16,8 +16,7 @@
 
 """Support for integrating a Django project with the appengine infrastructure.
 
-This works with both Django 0.96 (via much monkey patching) and Django
-0.97.pre1.
+This requires Django 1.0beta1 or greater.
 
 This module enables you to use the Django manage.py utility and *some* of it's
 subcommands. View the help of manage.py for exact details.

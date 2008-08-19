@@ -1,3 +1,10 @@
+Tue 19 August 2008
+==================
+
+Support for versions of Django less than 1.0beta_1 has been removed. If you
+wish to continue using Django 0.96 you will need to stay with revision 53 of
+the Google App Engine Helper for Django.
+
 Wed 6 August 2008
 =================
 
