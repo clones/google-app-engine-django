@@ -49,6 +49,7 @@ class ModelOptions(object):
     self.module_name = self.object_name.lower()
     model_module = sys.modules[cls.__module__]
     self.app_label = model_module.__name__.split('.')[-2]
+    self.abstract = False
 
   class pk:
     """Stub the primary key to always be 'key_name'"""
