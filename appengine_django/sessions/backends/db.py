@@ -21,9 +21,6 @@ from django.core.exceptions import SuspiciousOperation
 
 from appengine_django.sessions.models import Session
 
-from google.appengine.ext import db
-
-
 class SessionStore(base.SessionBase):
   """A key-based session store for Google App Engine."""
 
@@ -35,14 +32,13 @@ class SessionStore(base.SessionBase):
       except SuspiciousOperation:
         # Create a new session_key for extra security.
         pass
-    self.session_key = self._get_new_session_key()
-    self._session_cache = {}
-    self.save()
-    # Ensure the user is notified via a new cookie.
-    self.modified = True
+    self.create()
     return {}
 
-  def save(self):
+  def save(self, must_create=False):
+    if must_create:
+      if Session.get_by_key_name('k:' + self._session_key):
+        raise base.CreateError
     session = Session(
         key_name='k:' + self.session_key,
         session_data = self.encode(self._session),
@@ -52,7 +48,9 @@ class SessionStore(base.SessionBase):
   def exists(self, session_key):
     return self._get_session(session_key) is not None
 
-  def delete(self, session_key):
+  def delete(self, session_key=None):
+    if session_key is None:
+      session_key = self._session_key
     session = self._get_session(session_key)
     if session:
       session.delete()
@@ -64,3 +62,19 @@ class SessionStore(base.SessionBase):
         return session
       session.delete()
     return None
+
+  def create(self):
+    while True:
+      self.session_key = self._get_new_session_key()
+      try:
+        # Save immediately to ensure we have a unique entry in the
+        # database.
+        self.save(must_create=True)
+      except base.CreateError:
+        # Key wasn't unique. Try again.
+        continue
+      self.modified = True
+      self._session_cache = {}
+      return
+
+
