@@ -40,6 +40,7 @@ eg:
 import logging
 import os
 import sys
+import unittest
 
 
 DIR_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -488,11 +489,10 @@ def InstallAuthentication():
     from appengine_django.auth.decorators import login_required
     django_decorators.login_required = login_required
     if VERSION >= (0, 97, None):
-      from appengine_django.auth import tests
+      from django.contrib import auth as django_auth
       from django.contrib.auth import tests as django_tests
-      django_tests.PasswordResetTest = None
-      django_tests.__test__ = {}
-      django_tests.__doc__ = tests.__doc__
+      django_auth.suite = unittest.TestSuite
+      django_tests.suite = unittest.TestSuite
     logging.debug("Installing authentication framework")
   except ImportError:
     logging.debug("No Django authentication support available")
