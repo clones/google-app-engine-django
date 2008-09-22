@@ -20,45 +20,6 @@ Limitations:
  - all user permissions methods are not available (requires contenttypes)
 """
 
-from django.template import Node
+from django.template import add_to_builtins
 
-from google.appengine.api import users
-from google.appengine.ext.webapp import template
-
-register = template.create_template_register()
-template.register_template_library("appengine_django.auth")
-
-
-class AuthLoginUrlsNode(Node):
-  """Template node that creates an App Engine login or logout URL.
-  
-  If create_login_url is True the App Engine's login URL is rendered into
-  the template, otherwise the logout URL.
-  """
-  def __init__(self, create_login_url, redirect):
-    self.redirect = redirect
-    self.create_login_url = create_login_url
-
-  def render(self, context):
-    if self.create_login_url:
-      return users.create_login_url(self.redirect)
-    else:
-      return users.create_logout_url(self.redirect)
-
-
-def auth_login_urls(parser, token):
-  """Template tag registered as 'auth_login_url' and 'auth_logout_url'
-  when the module is imported.
-  
-  Both tags take an optional argument that specifies the redirect URL and
-  defaults to '/'.
-  """
-  bits = list(token.split_contents())
-  if len(bits) == 2:
-    redirect = bits[1]
-  else:
-    redirect = "/"
-  login = bits[0] == "auth_login_url"
-  return AuthLoginUrlsNode(login, redirect)
-register.tag("auth_login_url", auth_login_urls)
-register.tag("auth_logout_url", auth_login_urls)
+add_to_builtins('appengine_django.auth.templatetags')
