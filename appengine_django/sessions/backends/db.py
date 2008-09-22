@@ -21,6 +21,7 @@ from django.core.exceptions import SuspiciousOperation
 
 from appengine_django.sessions.models import Session
 
+
 class SessionStore(base.SessionBase):
   """A key-based session store for Google App Engine."""
 
@@ -32,13 +33,16 @@ class SessionStore(base.SessionBase):
       except SuspiciousOperation:
         # Create a new session_key for extra security.
         pass
-    self.create()
+    self.session_key = self._get_new_session_key()
+    self._session_cache = {}
+    self.save()
+    # Ensure the user is notified via a new cookie.
+    self.modified = True
     return {}
 
   def save(self, must_create=False):
-    if must_create:
-      if Session.get_by_key_name('k:' + self._session_key):
-        raise base.CreateError
+    if must_create and self.exists(self.session_key):
+      raise base.CreateError
     session = Session(
         key_name='k:' + self.session_key,
         session_data = self.encode(self._session),
@@ -46,12 +50,12 @@ class SessionStore(base.SessionBase):
     session.put()
 
   def exists(self, session_key):
-    return self._get_session(session_key) is not None
+    return Session.get_by_key_name('k:' + session_key) is not None
 
   def delete(self, session_key=None):
     if session_key is None:
       session_key = self._session_key
-    session = self._get_session(session_key)
+    session = self._get_session(session_key=session_key)
     if session:
       session.delete()
 
@@ -76,5 +80,3 @@ class SessionStore(base.SessionBase):
       self.modified = True
       self._session_cache = {}
       return
-
-
