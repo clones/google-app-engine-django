@@ -19,6 +19,8 @@ App Engine compatible models for the Django authentication framework.
 from django.core import mail
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
+from django.utils.encoding import smart_str
+import urllib
 
 try:
   # Django >= 0.97
