@@ -41,6 +41,7 @@ import logging
 import os
 import sys
 import unittest
+import zipfile
 
 
 DIR_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -106,9 +107,15 @@ except ImportError, e:
   sys.path = sys.path[0:1] + EXTRA_PATHS + sys.path[1:]
   from google.appengine.api import apiproxy_stub_map
 
+# Look for a zipped copy of Django.
+have_django_zip = False
+django_zip_path = os.path.join(PARENT_DIR, 'django.zip')
+if os.path.exists(django_zip_path):
+  have_django_zip = True
+  sys.path.insert(1, django_zip_path)
 
 # Remove the standard version of Django if a local copy has been provided.
-if os.path.exists(os.path.join(PARENT_DIR, 'django')):
+if have_django_zip or os.path.exists(os.path.join(PARENT_DIR, 'django')):
   for k in [k for k in sys.modules if k.startswith('django')]:
     del sys.modules[k]
 
@@ -122,8 +129,8 @@ appconfig = None
 have_appserver = False
 
 # Hide everything other than the flags above and the install function.
-__all__ = ("appid", "appconfig", "have_appserver",
-           "InstallAppengineHelperForDjango")
+__all__ = ("appid", "appconfig", "have_appserver", "have_django_zip",
+           "django_zip_path", "InstallAppengineHelperForDjango")
 
 
 INCOMPATIBLE_COMMANDS = ["adminindex", "createcachetable", "dbshell",
@@ -396,6 +403,9 @@ def ModifyAvailableCommands():
                                                    '%s_template')
   else:
     project_directory = os.path.join(__path__[0], "../")
+    if have_django_zip:
+      FindCommandsInZipfile.orig = management.find_commands
+      management.find_commands = FindCommandsInZipfile
     management.get_commands()
     # Replace startapp command which is set by previous call to get_commands().
     from appengine_django.management.commands.startapp import ProjectCommand
@@ -403,6 +413,33 @@ def ModifyAvailableCommands():
     RemoveCommands(management._commands)
     # Django 0.97 will install the replacements automatically.
   logging.debug("Removed incompatible Django manage.py commands")
+
+
+def FindCommandsInZipfile(management_dir):
+    """
+    Given a path to a management directory, returns a list of all the command
+    names that are available.
+
+    This implementation also works when Django is loaded from a zip.
+
+    Returns an empty list if no commands are defined.
+    """
+    if ".zip" not in management_dir:
+      return FindCommandsInZipfile.orig(management_dir)
+
+    # Django is sourced from a zipfile, ask zip module for a list of files.
+    filename, path = management_dir.split(".zip/")
+    zipinfo = zipfile.ZipFile("%s.zip" % filename)
+
+    def _IsCmd(t):
+      """Returns true if t matches the criteria for a command module."""
+      if not t.startswith(path):
+        return False
+      if t.startswith("_") or not t.endswith(".py"):
+        return False
+      return True
+
+    return [os.path.basename(f)[:-3] for f in zipinfo.namelist() if _IsCmd(f)]
 
 
 def RemoveCommands(command_dict):
