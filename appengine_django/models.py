@@ -135,10 +135,8 @@ class PropertiedClassWithDjango(db.PropertiedClass):
       return
 
     fields = [PropertyWrapper(p) for p in cls._properties.values()]
-    if VERSION >= (0, 97, None):
-      cls._meta.local_fields = fields
-    else:
-      cls._meta.fields = fields
+    cls._meta.local_fields = fields
+
 
 class BaseModel(db.Model):
   """Combined appengine and Django model.

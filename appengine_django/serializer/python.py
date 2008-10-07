@@ -31,47 +31,7 @@ from django.db import models
 from google.appengine.api import datastore_types
 from google.appengine.ext import db
 
-try:
-  from django.utils.encoding import smart_unicode
-except ImportError:
-  import datetime
-  import types
-  from django.utils.functional import Promise
-
-  def force_unicode(s, encoding='utf-8', strings_only=False, errors='strict'):
-    """
-    Similar to smart_unicode, except that lazy instances are resolved to
-    strings, rather than kept as lazy objects.
-
-    If strings_only is True, don't convert (some) non-string-like objects.
-    """
-    non_strings = (types.NoneType, int, long, datetime.datetime, datetime.date,
-                   datetime.time, float)
-    if strings_only and isinstance(s, non_strings):
-      return s
-    if not isinstance(s, basestring,):
-      if hasattr(s, '__unicode__'):
-        s = unicode(s)
-      else:
-        s = unicode(str(s), encoding, errors)
-    elif not isinstance(s, unicode):
-      # Note: We use .decode() here, instead of unicode(s, encoding,
-      # errors), so that if s is a SafeString, it ends up being a
-      # SafeUnicode at the end.
-      s = s.decode(encoding, errors)
-    return s
-
-  def smart_unicode(s, encoding='utf-8', strings_only=False, errors='strict'):
-    """
-    Returns a unicode object representing 's'. Treats bytestrings using the
-    'encoding' codec.
-
-    If strings_only is True, don't convert (some) non-string-like objects.
-    """
-    if isinstance(s, Promise):
-      # The input is the result of a gettext_lazy() call.
-      return s
-    return force_unicode(s, encoding, strings_only, errors)
+from django.utils.encoding import smart_unicode
 
 Serializer = python.Serializer
 

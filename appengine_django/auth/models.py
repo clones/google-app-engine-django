@@ -22,15 +22,7 @@ from django.db import models
 from django.utils.encoding import smart_str
 import urllib
 
-try:
-  # Django >= 0.97
-  from django.db.models.manager import EmptyManager
-except ImportError:
-  # Django = 0.96
-  from django.db.models.manager import Manager
-  class EmptyManager(Manager):
-    def get_query_set(self):
-      return self.get_empty_query_set()
+from django.db.models.manager import EmptyManager
 
 from google.appengine.api import users
 from google.appengine.ext import db

@@ -19,27 +19,11 @@ import logging
 import os
 import sys
 
-try:
-  from django.core.management.base import BaseCommand
-except ImportError:
-  # Fake BaseCommand out so imports on django 0.96 don't fail.
-  BaseCommand = object
+from django.core.management.base import BaseCommand
 
 
-# Django 0.96 integration.
-def v096_command(*args):
-  """Clears the current datastore. """
-  # This wrapper function is used instead of passing the real function directly
-  # to Django because Django 0.96 wants to read its docstring and args
-  # attribute for commandline help.
-  from django.db import connection
-  connection.flush()
-v096_command.args = ""
-
-
-# Django 0.97 integration.
 class Command(BaseCommand):
-    """Overrides the default Django 0.97 reset command.
+    """Overrides the default Django reset command.
     """
     help = 'Clears the current datastore.'
 

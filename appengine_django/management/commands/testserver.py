@@ -21,11 +21,7 @@ import sys
 from appengine_django.db.base import destroy_datastore
 from appengine_django.db.base import get_test_datastore_paths
 
-try:
-  from django.core.management.base import BaseCommand
-except ImportError:
-  # Fake BaseCommand out so imports on django 0.96 don't fail.
-  BaseCommand = object
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):

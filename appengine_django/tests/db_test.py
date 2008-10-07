@@ -34,12 +34,12 @@ class DatastoreTest(unittest.TestCase):
     self.assert_(isinstance(connection, DatabaseWrapper))
 
   def testDjangoDBConnectionStubs(self):
-    """Tests that members required by Django 0.97 are stubbed."""
+    """Tests that members required by Django are stubbed."""
     self.assert_(hasattr(connection, "features"))
     self.assert_(hasattr(connection, "ops"))
 
-  def testDjangoDBErroClasses(self):
-    """Tests that the error classes required by Django 0.97 are stubbed."""
+  def testDjangoDBErrorClasses(self):
+    """Tests that the error classes required by Django are stubbed."""
     self.assert_(hasattr(base, "DatabaseError"))
     self.assert_(hasattr(base, "IntegrityError"))
 

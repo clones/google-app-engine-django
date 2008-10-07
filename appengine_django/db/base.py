@@ -24,17 +24,9 @@ from appengine_django import have_appserver
 from appengine_django.db.creation import DatabaseCreation
 
 
-try:
-  # Django >= 0.97
-  from django.db.backends import BaseDatabaseWrapper
-  from django.db.backends import BaseDatabaseFeatures
-  from django.db.backends import BaseDatabaseOperations
-except ImportError:
-  # Django 0.96
-  from threading import local
-  BaseDatabaseWrapper = local
-  BaseDatabaseFeatures = object
-  BaseDatabaseOperations = object
+from django.db.backends import BaseDatabaseWrapper
+from django.db.backends import BaseDatabaseFeatures
+from django.db.backends import BaseDatabaseOperations
 
 
 def get_datastore_paths():
@@ -95,12 +87,12 @@ class IntegrityError(Exception):
 
 
 class DatabaseFeatures(BaseDatabaseFeatures):
-  """Stub class to provide the feaures member expected by Django 0.97"""
+  """Stub class to provide the feaures member expected by Django"""
   pass
 
 
 class DatabaseOperations(BaseDatabaseOperations):
-  """Stub class to provide the options member expected by Django 0.97"""
+  """Stub class to provide the options member expected by Django"""
   pass
 
 

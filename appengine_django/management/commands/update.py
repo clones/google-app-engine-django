@@ -18,11 +18,8 @@
 import sys
 import logging
 
-try:
-  from django.core.management.base import BaseCommand
-except ImportError:
-  # Fake BaseCommand out so imports on django 0.96 don't fail.
-  BaseCommand = object
+from django.core.management.base import BaseCommand
+
 
 def run_appcfg():
   # import this so that we run through the checks at the beginning

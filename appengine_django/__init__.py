@@ -179,24 +179,7 @@ def InstallAppengineDatabaseBackend():
   """
   from appengine_django import db
   sys.modules['django.db.backends.appengine'] = db
-  PatchTestDBCreationFunctions()
   logging.debug("Installed appengine database backend")
-
-
-def PatchTestDBCreationFunctions():
-  """Installs the functions that create/remove the test database.
-
-  Only required for Django 0.96. Django 0.97 finds these functions in the
-  backend and uses them automatically. Also skipped if running under an
-  appserver.
-  """
-  if VERSION >= (0, 97, None) or have_appserver:
-    return
-  from django.test import utils
-  from appengine_django.db import creation
-  utils.create_test_db = creation.create_test_db
-  utils.destroy_test_db = creation.destroy_test_db
-  logging.debug("Installed test database create/destroy functions")
 
 
 def InstallGoogleMemcache():
@@ -307,13 +290,8 @@ def DisableModelValidation():
 
   Validation needs to be disabled or serialization/deserialization will fail.
   """
-  # Imports must be performed in this function as they differ between versions.
-  if VERSION < (0, 97, None):
-    from django.core import management
-    management.get_validation_errors = lambda x, y=0: 0
-  else:
-    from django.core.management import validation
-    validation.get_validation_errors = lambda x, y=0: 0
+  from django.core.management import validation
+  validation.get_validation_errors = lambda x, y=0: 0
   logging.debug("Django SQL model validation disabled")
 
 def CleanupDjangoSettings():
@@ -348,10 +326,6 @@ def CleanupDjangoSettings():
   mw_mods = list(getattr(settings, "MIDDLEWARE_CLASSES", ()))
   disallowed_middleware_mods = (
     'django.middleware.doc.XViewMiddleware',)
-  if VERSION < (0, 97, None):
-      # Sessions are only supported with Django 0.97.
-      disallowed_middleware_mods += (
-          'django.contrib.sessions.middleware.SessionMiddleware',)
   for modname in mw_mods[:]:
     if modname in disallowed_middleware_mods:
       # Currently only the CommonMiddleware has been ported.  As other base
@@ -367,9 +341,6 @@ def CleanupDjangoSettings():
   disallowed_apps = (
     'django.contrib.contenttypes',
     'django.contrib.sites',)
-  if VERSION < (0, 97, None):
-      # Sessions are only supported with Django 0.97.
-      disallowed_apps += ('django.contrib.sessions',)
   for app in app_mods[:]:
     if app in disallowed_apps:
       app_mods.remove(app)
@@ -390,28 +361,15 @@ def ModifyAvailableCommands():
     # Commands are not used when running from an appserver.
     return
   from django.core import management
-  if VERSION < (0, 97, None):
-    RemoveCommands(management.DEFAULT_ACTION_MAPPING)
-    from appengine_django.management.commands import runserver
-    management.DEFAULT_ACTION_MAPPING['runserver'] = runserver.v096_command
-    from appengine_django.management.commands import flush
-    management.DEFAULT_ACTION_MAPPING['flush'] = flush.v096_command
-    from appengine_django.management.commands import reset
-    management.DEFAULT_ACTION_MAPPING['reset'] = reset.v096_command
-    # startapp command for django 0.96 
-    management.PROJECT_TEMPLATE_DIR = os.path.join(__path__[0], 'conf',
-                                                   '%s_template')
-  else:
-    project_directory = os.path.join(__path__[0], "../")
-    if have_django_zip:
-      FindCommandsInZipfile.orig = management.find_commands
-      management.find_commands = FindCommandsInZipfile
-    management.get_commands()
-    # Replace startapp command which is set by previous call to get_commands().
-    from appengine_django.management.commands.startapp import ProjectCommand
-    management._commands['startapp'] = ProjectCommand(project_directory) 
-    RemoveCommands(management._commands)
-    # Django 0.97 will install the replacements automatically.
+  project_directory = os.path.join(__path__[0], "../")
+  if have_django_zip:
+    FindCommandsInZipfile.orig = management.find_commands
+    management.find_commands = FindCommandsInZipfile
+  management.get_commands()
+  # Replace startapp command which is set by previous call to get_commands().
+  from appengine_django.management.commands.startapp import ProjectCommand
+  management._commands['startapp'] = ProjectCommand(project_directory) 
+  RemoveCommands(management._commands)
   logging.debug("Removed incompatible Django manage.py commands")
 
 
@@ -454,10 +412,9 @@ def RemoveCommands(command_dict):
 def InstallReplacementImpModule():
   """Install a replacement for the imp module removed by the appserver.
 
-  This is only required for Django 0.97 which uses imp.find_module to find
-  mangement modules provided by applications.
+  This is only to find mangement modules provided by applications.
   """
-  if VERSION < (0, 97, None) or not have_appserver:
+  if not have_appserver:
     return
   modname = 'appengine_django.replacement_imp'
   imp_mod = __import__(modname, {}, [], [''])
@@ -471,6 +428,10 @@ def InstallAppengineHelperForDjango():
   If the variable DEBUG_APPENGINE_DJANGO is set in the environment verbose
   logging of the actions taken will be enabled.
   """
+  if VERSION < (1, 0, None):
+    logging.error("Django 1.0 or greater is required!")
+    sys.exit(1)
+
   if os.getenv("DEBUG_APPENGINE_DJANGO"):
     logging.getLogger().setLevel(logging.DEBUG)
   else:
@@ -501,12 +462,8 @@ def InstallAppengineHelperForDjango():
 def InstallGoogleSMTPConnection():
   from appengine_django import mail as gmail
   from django.core import mail
-  if VERSION >= (0, 97, None):
-    logging.debug("Installing Google Email Adapter for Django 0.97+")
-    mail.SMTPConnection = gmail.GoogleSMTPConnection
-  else:
-    logging.debug("Installing Google Email Adapter for Django 0.96")
-    mail.send_mass_mail = gmail.send_mass_mail
+  logging.debug("Installing Google Email Adapter for Django")
+  mail.SMTPConnection = gmail.GoogleSMTPConnection
   mail.mail_admins = gmail.mail_admins
   mail.mail_managers = gmail.mail_managers
 
@@ -525,11 +482,10 @@ def InstallAuthentication():
     from django.contrib.auth import decorators as django_decorators
     from appengine_django.auth.decorators import login_required
     django_decorators.login_required = login_required
-    if VERSION >= (0, 97, None):
-      from django.contrib import auth as django_auth
-      from django.contrib.auth import tests as django_tests
-      django_auth.suite = unittest.TestSuite
-      django_tests.suite = unittest.TestSuite
+    from django.contrib import auth as django_auth
+    from django.contrib.auth import tests as django_tests
+    django_auth.suite = unittest.TestSuite
+    django_tests.suite = unittest.TestSuite
     logging.debug("Installing authentication framework")
   except ImportError:
     logging.debug("No Django authentication support available")
