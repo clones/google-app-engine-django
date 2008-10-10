@@ -39,6 +39,7 @@ eg:
 
 import logging
 import os
+import re
 import sys
 import unittest
 import zipfile
@@ -382,15 +383,23 @@ def FindCommandsInZipfile(management_dir):
 
     Returns an empty list if no commands are defined.
     """
-    if ".zip" not in management_dir:
+    zip_marker = ".zip%s" % os.sep
+    if zip_marker not in management_dir:
       return FindCommandsInZipfile.orig(management_dir)
 
     # Django is sourced from a zipfile, ask zip module for a list of files.
-    filename, path = management_dir.split(".zip/")
+    filename, path = management_dir.split(zip_marker)
     zipinfo = zipfile.ZipFile("%s.zip" % filename)
 
+    # The zipfile module returns paths in the format of the operating system
+    # that created the zipfile! This may not match the path to the zipfile
+    # itself. Convert operating system specific characters to a standard
+    # character (#) to compare paths to work around this.
+    path_normalise = re.compile(r"[/\\]")
+    path = path_normalise.sub("#", path)
     def _IsCmd(t):
       """Returns true if t matches the criteria for a command module."""
+      t = path_normalise.sub("#", t)
       if not t.startswith(path):
         return False
       if t.startswith("_") or not t.endswith(".py"):
