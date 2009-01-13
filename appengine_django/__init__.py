@@ -391,6 +391,9 @@ def FindCommandsInZipfile(management_dir):
     filename, path = management_dir.split(zip_marker)
     zipinfo = zipfile.ZipFile("%s.zip" % filename)
 
+    # Add commands directory to management path.
+    path = os.path.join(path, "commands")
+
     # The zipfile module returns paths in the format of the operating system
     # that created the zipfile! This may not match the path to the zipfile
     # itself. Convert operating system specific characters to a standard
@@ -399,10 +402,11 @@ def FindCommandsInZipfile(management_dir):
     path = path_normalise.sub("#", path)
     def _IsCmd(t):
       """Returns true if t matches the criteria for a command module."""
+      filename = os.path.basename(t)
       t = path_normalise.sub("#", t)
       if not t.startswith(path):
         return False
-      if t.startswith("_") or not t.endswith(".py"):
+      if filename.startswith("_") or not t.endswith(".py"):
         return False
       return True
 

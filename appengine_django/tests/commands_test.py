@@ -25,6 +25,7 @@ works correctly.
 
 
 import os
+import re
 import signal
 import subprocess
 import tempfile
@@ -58,20 +59,17 @@ class CommandsTest(unittest.TestCase):
       input: A string to write to stdin when the command starts. stdin is
         closed after the string is written.
 
-    Raises:
-      This function does not return anything but will raise assertion errors if
-      the command does not exit successfully.
+    Returns:
+      rc: The integer return code of the process
+      output: A string containing the childs output.
     """
     if not args:
       args = []
     start = time.time()
     int_sent = False
-    fd, tempname = tempfile.mkstemp()
-    infd = fd
-    if input:
-      infd = subprocess.PIPE
+    fd = subprocess.PIPE
 
-    child = subprocess.Popen(["./manage.py", command] + args, stdin=infd,
+    child = subprocess.Popen(["./manage.py", command] + args, stdin=fd,
                              stdout=fd, stderr=fd, cwd=os.getcwdu())
     if input:
       child.stdin.write(input)
@@ -96,41 +94,90 @@ class CommandsTest(unittest.TestCase):
       time.sleep(2)  # Give time for the signal to be received.
       break
 
-    # Check child return code
+    # Return status and output.
+    return rc, child.stdout.read(), child.stderr.read()
+
+  def assertCommandSucceeds(self, command, *args, **kwargs):
+    """Asserts that the specified command successfully completes.
+
+    Args:
+      command: The name of the command to run.
+      All other arguments are passed directly through to the runCommand
+      routine.
+
+    Raises:
+      This function does not return anything but will raise assertion errors if
+      the command does not exit successfully.
+    """
+    rc, stdout, stderr = self.runCommand(command, *args, **kwargs)
+    fd, tempname = tempfile.mkstemp()
+    os.write(fd, stdout)
     os.close(fd)
     self.assertEquals(0, rc,
                       "%s did not return successfully (rc: %d): Output in %s" %
                       (command, rc, tempname))
     os.unlink(tempname)
 
+  def getCommands(self):
+    """Returns a list of valid commands for manage.py.
+
+    Args:
+      None
+
+    Returns:
+      A list of valid commands for manage.py as read from manage.py's help
+      output.
+    """
+    rc, stdout, stderr = self.runCommand("help")
+    parts = re.split("Available subcommands:", stderr)
+    if len(parts) < 2:
+      return []
+
+    return [t.strip() for t in parts[-1].split("\n") if t.strip()]
+
   def testDiffSettings(self):
     """Tests the diffsettings command."""
-    self.runCommand("diffsettings")
+    self.assertCommandSucceeds("diffsettings")
 
   def testDumpData(self):
     """Tests the dumpdata command."""
-    self.runCommand("dumpdata")
+    self.assertCommandSucceeds("dumpdata")
 
   def testFlush(self):
     """Tests the flush command."""
-    self.runCommand("flush")
+    self.assertCommandSucceeds("flush")
 
   def testLoadData(self):
     """Tests the loaddata command."""
-    self.runCommand("loaddata")
+    self.assertCommandSucceeds("loaddata")
 
   def testLoadData(self):
     """Tests the loaddata command."""
-    self.runCommand("loaddata")
+    self.assertCommandSucceeds("loaddata")
 
   def testReset(self):
     """Tests the reste command."""
-    self.runCommand("reset", ["appengine_django"])
+    self.assertCommandSucceeds("reset", ["appengine_django"])
 
   def testRunserver(self):
     """Tests the runserver command."""
-    self.runCommand("runserver", int_after=2.0)
+    self.assertCommandSucceeds("runserver", int_after=2.0)
 
   def testShell(self):
     """Tests the shell command."""
-    self.runCommand("shell", input="exit")
+    self.assertCommandSucceeds("shell", input="exit")
+
+  def testUpdate(self):
+    """Tests that the update command exists.
+
+    Cannot test that it works without mocking out parts of dev_appserver so for
+    now we just assume that if it is present it will work.
+    """
+    cmd_list = self.getCommands()
+    self.assert_("update" in cmd_list)
+
+  def testZipCommandListFiltersCorrectly(self):
+    """When running under a zipfile test that only valid commands are found."""
+    cmd_list = self.getCommands()
+    self.assert_("__init__" not in cmd_list)
+    self.assert_("base" not in cmd_list)
