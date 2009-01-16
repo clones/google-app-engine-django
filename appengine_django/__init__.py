@@ -97,6 +97,7 @@ except ImportError, e:
   # Add the SDK and the libraries within it to the system path.
   EXTRA_PATHS = [
       SDK_PATH,
+      os.path.join(SDK_PATH, 'lib', 'antlr3'),
       os.path.join(SDK_PATH, 'lib', 'django'),
       os.path.join(SDK_PATH, 'lib', 'webob'),
       os.path.join(SDK_PATH, 'lib', 'yaml', 'lib'),
