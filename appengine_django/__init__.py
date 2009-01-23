@@ -486,6 +486,8 @@ def InstallGoogleSMTPConnection():
 
 
 def InstallAuthentication():
+  if "django.contrib.auth" not in settings.INSTALLED_APPS:
+    return
   try:
     from appengine_django.auth import models as helper_models
     from django.contrib.auth import models
