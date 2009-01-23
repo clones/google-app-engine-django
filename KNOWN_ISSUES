@@ -1,6 +1,14 @@
 Known Issues with the Google App Engine Helper for Django
 =========================================================
 
-There are no major known issues with the helper at this time. See the issue
+* manage.py commands do not work when appengine_django.zip is used
+
+When running with the helper itself contained within a zipfile the additional
+and modified manage.py commands do not work. I suspect this is due to Django
+not appropriately accounting for the zipfile when trying to locate the
+replacement commands.
+
+
+There are no other known issues with the helper at this time. See the issue
 tracker at http://code.google.com/p/google-app-engine-django/issues/list for
 up to date information on bugs and feature requests.

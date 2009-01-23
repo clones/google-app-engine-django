@@ -47,6 +47,9 @@ import zipfile
 
 DIR_PATH = os.path.abspath(os.path.dirname(__file__))
 PARENT_DIR = os.path.dirname(DIR_PATH)
+if PARENT_DIR.endswith(".zip"):
+  # Check for appengine_django itself being in a zipfile.
+  PARENT_DIR = os.path.dirname(PARENT_DIR)
 
 # Add this project to the start of sys path to enable direct imports.
 sys.path = [PARENT_DIR,] + sys.path
@@ -156,7 +159,7 @@ def LoadAppengineEnvironment():
   # Load the application configuration.
   try:
     from google.appengine.tools import dev_appserver
-    appconfig, unused_matcher = dev_appserver.LoadAppConfig(".", {})
+    appconfig, unused_matcher = dev_appserver.LoadAppConfig(PARENT_DIR, {})
     appid = appconfig.application
   except ImportError:
     # Running under the real appserver.
