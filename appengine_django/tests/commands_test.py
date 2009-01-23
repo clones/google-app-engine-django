@@ -60,7 +60,7 @@ class CommandsTest(unittest.TestCase):
         closed after the string is written.
 
     Returns:
-      rc: The integer return code of the process
+      rc: The integer return code of the process.
       output: A string containing the childs output.
     """
     if not args:
