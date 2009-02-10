@@ -84,7 +84,7 @@ except ImportError, e:
   SDK_PATH = None
   for sdk_path in paths:
     if os.path.exists(sdk_path):
-      SDK_PATH = sdk_path
+      SDK_PATH = os.path.realpath(sdk_path)
       break
   if SDK_PATH is None:
     # The SDK could not be found in any known location.
