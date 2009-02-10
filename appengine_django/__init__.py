@@ -147,8 +147,7 @@ def LoadAppengineEnvironment():
   Returns:
     This function has no return value, but it sets the following parameters on
     this package:
-    - appid: The name of the application as read from the config file.
-      read from the config file.
+    - appid: The name of the application.
     - have_appserver: Boolean parameter which is True if the code is being run
         from within the appserver environment.
   """
