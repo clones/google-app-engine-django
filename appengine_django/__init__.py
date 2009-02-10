@@ -130,11 +130,10 @@ from django.conf import settings
 
 # Flags made available this module
 appid = None
-appconfig = None
 have_appserver = False
 
 # Hide everything other than the flags above and the install function.
-__all__ = ("appid", "appconfig", "have_appserver", "have_django_zip",
+__all__ = ("appid", "have_appserver", "have_django_zip",
            "django_zip_path", "InstallAppengineHelperForDjango")
 
 
@@ -149,28 +148,31 @@ def LoadAppengineEnvironment():
     This function has no return value, but it sets the following parameters on
     this package:
     - appid: The name of the application as read from the config file.
-    - appconfig: The appserver configuration dictionary for the application, as
       read from the config file.
     - have_appserver: Boolean parameter which is True if the code is being run
         from within the appserver environment.
   """
-  global appid, appconfig, have_appserver
-
-  # Load the application configuration.
-  try:
-    from google.appengine.tools import dev_appserver
-    appconfig, unused_matcher = dev_appserver.LoadAppConfig(PARENT_DIR, {})
-    appid = appconfig.application
-  except ImportError:
-    # Running under the real appserver.
-    appconfig = {}
-    appid = "unknown"
+  global appid, have_appserver
 
   # Detect if we are running under an appserver.
   have_appserver = False
   stub = apiproxy_stub_map.apiproxy.GetStub("datastore_v3")
   if stub:
     have_appserver = True
+
+  # Load the application identifier.
+  if have_appserver:
+    appid = os.environ.get("APPLICATION_ID", "unknown")
+  else:
+    # Running as manage.py script, read from config file.
+    try:
+      from google.appengine.tools import dev_appserver
+      appconfig, unused_matcher = dev_appserver.LoadAppConfig(PARENT_DIR, {})
+      appid = appconfig.application
+    except ImportError:
+      # Something went wrong.
+      appid = "unknown"
+
   logging.debug("Loading application '%s' %s an appserver" %
                 (appid, have_appserver and "with" or "without"))
 

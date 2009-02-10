@@ -19,7 +19,6 @@
 
 import unittest
 
-from appengine_django import appconfig
 from appengine_django import appid
 from appengine_django import have_appserver
 
@@ -30,7 +29,6 @@ class AppengineDjangoTest(unittest.TestCase):
   def testAppidProvided(self):
     """Tests that application ID and configuration has been loaded."""
     self.assert_(appid is not None)
-    self.assert_(appconfig is not None)
 
   def testAppserverDetection(self):
     """Tests that the appserver detection flag is present and correct."""

@@ -19,7 +19,6 @@
 import unittest
 
 from django.core.cache import get_cache
-from appengine_django import appconfig
 from appengine_django import appid
 from appengine_django import have_appserver
 
