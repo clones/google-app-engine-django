@@ -124,6 +124,9 @@ if have_django_zip or os.path.exists(os.path.join(PARENT_DIR, 'django')):
   for k in [k for k in sys.modules if k.startswith('django')]:
     del sys.modules[k]
 
+# Must set this env var *before* importing any more of Django.
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+
 from django import VERSION
 from django.conf import settings
 
@@ -458,9 +461,6 @@ def InstallAppengineHelperForDjango():
 
   # Force Django to reload its settings.
   settings._target = None
-
-  # Must set this env var *before* importing any more of Django.
-  os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
   LoadAppengineEnvironment()
   InstallReplacementImpModule()
