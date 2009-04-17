@@ -130,6 +130,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 from django import VERSION
 from django.conf import settings
 
+from google.appengine.api import yaml_errors
 
 # Flags made available this module
 appid = None
@@ -171,7 +172,9 @@ def LoadAppengineEnvironment():
       from google.appengine.tools import dev_appserver
       appconfig, unused_matcher = dev_appserver.LoadAppConfig(PARENT_DIR, {})
       appid = appconfig.application
-    except ImportError:
+    except (ImportError, yaml_errors.EventListenerYAMLError), e:
+      logging.warn("Could not read the Application ID from app.yaml. "
+                   "This may break things in unusual ways!")
       # Something went wrong.
       appid = "unknown"
 
