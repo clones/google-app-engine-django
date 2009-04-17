@@ -82,8 +82,8 @@ Using the helper to bootstrap a new project
 3) If you have installed the Google App Engine SDK using the Windows or MacOS
    installers provided by Google you may skip this step.
 
-   Copy (or create a symlink) from the location of the extracted SDK zipfile to
-   the '.google_appengine' directory inside your project. E.g:
+   Create a symlink from the location of the extracted SDK zipfile to the
+   '.google_appengine' directory inside your project. E.g:
 
    ln -s /home/me/google_appengine /home/me/myproject/.google_appengine
 
@@ -123,8 +123,8 @@ Installing the helper into an existing project
 5) If you have installed the Google App Engine SDK using the Windows or MacOS
    installers provided by Google you may skip this step.
 
-   Copy (or create a symlink) from the location of the SDK to the
-   '.google_appengine 'directory inside your project. E.g:
+   Create a symlink from the location of the extracted SDK zipfile to the
+   '.google_appengine' directory inside your project. E.g:
 
    ln -s /home/me/google_appengine /home/me/myproject/.google_appengine
 
