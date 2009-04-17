@@ -66,6 +66,11 @@ ADMIN_MEDIA_PREFIX = '/media/'
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'hvhxfm5u=^*v&doo#oq8x*eg8+1&9sxbye@=umutgn^t_sg_nx'
 
+# Ensure that email is not sent via SMTP by default to match the standard App
+# Engine SDK behaviour. If you want to sent email via SMTP then add the name of
+# your mailserver here.
+EMAIL_HOST = ''
+
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
