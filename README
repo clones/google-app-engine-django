@@ -65,7 +65,9 @@ http://sourceforge.net/projects/pywin32/
 This version of the helper requires Django 1.0beta_1 or greater. If you would
 prefer to use the stable version of Django (0.96) that is bundled with the App
 Engine SDK then you can download revision 53 or earlier of the helper from the
-address in the previous section.
+address in the previous section. You must place Django in a directory named
+django/ instead your project, or provide a django.zip file containing the
+zipped Django source. See below for details.
 
 
 Using the helper to bootstrap a new project
@@ -88,11 +90,18 @@ Using the helper to bootstrap a new project
    If you like to stay up to date see the 'SDK via SVN' section below for an
    alternative setup.
 
-4) Run manage.py to start a new application for your code:
+4) Download and copy Django into the django/ subdirectory of your project.
+   Alternatively you can create a zipfile of the Django code and place it at
+   django.zip inside your project. E.g.
+
+   /home/me/myproject/django          (directory method)
+   /home/me/myproject/django.zip      (zipfile method)
+
+5) Run manage.py to start a new application for your code:
 
    python manage.py startapp myapplication
 
-5) Add your code!
+6) Add your code!
 
 
 Installing the helper into an existing project
@@ -122,7 +131,10 @@ Installing the helper into an existing project
    If you like to stay up to date see the 'SDK via SVN' section below for an
    alternative setup.
 
-6) Remove incompatible settings from your settings.py file.
+6) Ensure Django is available within your project as described in Step 4 of the
+   instructions for bootstrapping new porjects above.
+
+7) Remove incompatible settings from your settings.py file.
 
    The helper can warn you about some settings that it knows to be
    incompatible, you can see these warnings by running::
@@ -133,7 +145,7 @@ Installing the helper into an existing project
    problem here is usually loading middleware that attempts to import modules
    that are banned by the appserver.
 
-7) Port your models and code over to the appengine_django.model.BaseModel
+8) Port your models and code over to the appengine_django.model.BaseModel
    class.
 
 
