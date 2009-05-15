@@ -160,7 +160,7 @@ Once you have commited the basic structure of your project to your repository
 change to the base directory and add the following line to the svn:externals
 property using svn propset or svn propedit.
 
-.google_appengine http://googleappengine.googlecode.com/svn/trunk/
+.google_appengine http://googleappengine.googlecode.com/svn/trunk/python/
 
 Then run svn update and a copy of the SDK will be installed into the
 '.google_appengine' subdirectory. This copy of the SDK will be updated with the
