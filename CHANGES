@@ -1,3 +1,10 @@
+Fri 15 May 2009
+===============
+
+* The Django auth app is now disabled in the default settings.py. If you want
+  to use it in your application you will need to enable it (and dependencies
+  such as sessions) explicitly.
+
 Tue 19 August 2008
 ==================
 
