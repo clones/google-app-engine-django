@@ -55,6 +55,8 @@ class GoogleSMTPConnection(SMTPConnection):
                                to=email_message.to,
                                subject=email_message.subject,
                                body=email_message.body)
+        if email_message.extra_headers.get('Reply-To', None):
+            e.reply_to = email_message.extra_headers['Reply-To']
         if email_message.bcc:
             e.bcc = list(email_message.bcc)
         #TODO - add support for html messages and attachments...
