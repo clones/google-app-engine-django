@@ -1,9 +1,44 @@
-Fri 15 May 2009
-===============
+May 2009
+========
 
+* Improved performance of repr() for BaseModel derived classes.
+* Added support for setting Reply-To when sending email.
 * The Django auth app is now disabled in the default settings.py. If you want
   to use it in your application you will need to enable it (and dependencies
   such as sessions) explicitly.
+
+April 2009
+==========
+
+* Modify the default settings.py so that SMTP email is not send by default.
+
+March 2009
+==========
+
+* Added a basic console (./managed.py console) that uses the remote_api to
+  allow command execution against the live application on appspot.com
+* Fixed compatibility issues with new Django releases.
+
+February 2009
+=============
+
+* Fixed compatibility with App Engine Python SDK 1.1.9 file restrictions.
+
+January 2009
+============
+
+* Make the use of django.contrib.auth completely optional.
+* Added initial support for placing the helper itself (appengine_django
+  directory) into a zipfile named appengine_django.zip in the top level
+  project directory. Note. That manage.py commands will not work when using
+  a zipped appengine_django.
+
+September 2008
+==============
+
+* Added support for loading Django from a file named django.zip in the top
+  level project directory.
+* Improved session backend contributed by Bernd Dorn of Lovely Systems.
 
 Tue 19 August 2008
 ==================
