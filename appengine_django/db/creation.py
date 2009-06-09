@@ -17,17 +17,19 @@
 
 import logging
 
+from django.conf import settings
 from django.db.backends.creation import BaseDatabaseCreation
-  
-  
+
+
 class DatabaseCreation(BaseDatabaseCreation):
-  
+
   def create_test_db(self, *args, **kw):
     """Destroys the test datastore. A new store will be recreated on demand"""
+    settings.DATABASE_SUPPORTS_TRANSACTIONS = False
     self.destroy_test_db()
     self.connection.use_test_datastore = True
     self.connection.flush()
-  
+
 
   def destroy_test_db(self, *args, **kw):
     """Destroys the test datastore files."""

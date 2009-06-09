@@ -1,3 +1,10 @@
+June 2009
+=========
+
+* Add support for DATABASE_SUPPORTS_TRANSACTIONS parameter to enable tests
+  to succeed in newer Django revisions (> 10925). Patch contributed by
+  Andi Albrecht. Thanks :)
+
 May 2009
 ========
 

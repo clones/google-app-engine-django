@@ -19,6 +19,8 @@
 
 import unittest
 
+from django.test import TestCase as DjangoTestCase
+
 from appengine_django import appid
 from appengine_django import have_appserver
 
@@ -35,3 +37,11 @@ class AppengineDjangoTest(unittest.TestCase):
     # It seems highly unlikely that these tests would ever be run from within
     # an appserver.
     self.assertEqual(have_appserver, False)
+
+
+class DjangoTestCaseTest(DjangoTestCase):
+  """Tests that the tests can be subclassed from Django's TestCase class."""
+
+  def testPassing(self):
+    """Tests that tests with Django's TestCase class work."""
+    self.assert_(True)
