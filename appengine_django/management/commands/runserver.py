@@ -56,9 +56,14 @@ def start_dev_appserver():
                '--smtp_port', str(settings.EMAIL_PORT),
                '--smtp_user', settings.EMAIL_HOST_USER,
                '--smtp_password', settings.EMAIL_HOST_PASSWORD])
+
+  # Allow skipped files so we don't die
+  args.extend(['--allow_skipped_files'])
+
   # Pass the application specific datastore location to the server.
   p = get_datastore_paths()
   args.extend(["--datastore_path", p[0], "--history_path", p[1]])
+
   # Append the current working directory to the arguments.
   dev_appserver_main.main([progname] + args + [os.getcwdu()])
 

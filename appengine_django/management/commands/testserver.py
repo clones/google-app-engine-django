@@ -66,6 +66,9 @@ class Command(BaseCommand):
                      '--smtp_user', settings.EMAIL_HOST_USER,
                      '--smtp_password', settings.EMAIL_HOST_PASSWORD])
 
+    # Allow skipped files so we don't die
+    new_args.extend(['--allow_skipped_files'])
+
     # Start the test dev_appserver.
     from google.appengine.tools import dev_appserver_main
     dev_appserver_main.main(new_args)
