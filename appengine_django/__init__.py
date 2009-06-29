@@ -112,6 +112,13 @@ except ImportError, e:
   sys.path = sys.path[0:1] + EXTRA_PATHS + sys.path[1:]
   from google.appengine.api import apiproxy_stub_map
 
+# Try to import Django 1.0 through App Engine
+try:
+  from google.appengine.dist import use_library
+  use_library('django', '1.0')
+except ImportError:
+  pass
+
 # Look for a zipped copy of Django.
 have_django_zip = False
 django_zip_path = os.path.join(PARENT_DIR, 'django.zip')
