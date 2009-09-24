@@ -15,7 +15,7 @@
 
 
 from appengine_django import InstallAppengineHelperForDjango
-InstallAppengineHelperForDjango()
+InstallAppengineHelperForDjango('1.0')
 
 from django.core.management import execute_manager
 try:
