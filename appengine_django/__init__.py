@@ -132,15 +132,19 @@ def LoadSdk():
 
 
 
-def LoadDjango(version='1.0'):
+def LoadDjango(version=None):
   global have_django_zip
 
-  # Try to import Django 1.0 through App Engine
-  try:
-    from google.appengine.dist import use_library
+  from google.appengine.dist import use_library
+  from google.appengine.dist._library import UnacceptableVersionError
+
+  # Must set this env var *before* importing any more of Django.
+  os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+
+  # If we have set a version explicitly, force that
+  if version:
     use_library('django', version)
-  except ImportError:
-    pass
+    return
 
   if os.path.exists(django_zip_path):
     have_django_zip = True
@@ -150,9 +154,18 @@ def LoadDjango(version='1.0'):
   if have_django_zip or os.path.exists(os.path.join(PARENT_DIR, 'django')):
     for k in [k for k in sys.modules if k.startswith('django')]:
       del sys.modules[k]
+    return
 
-  # Must set this env var *before* importing any more of Django.
-  os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+  # If we aren't loading from a zip or local copy then try for whichever
+  # supported version is highest and installed
+  for check_version in ('1.1', '1.0'):
+    try:
+      use_library('django', check_version)
+      return
+    except UnacceptableVersionError:
+      pass
+
+  raise UnacceptableVersionError()
 
 
 def LoadAppengineEnvironment():
@@ -458,7 +471,7 @@ def InstallReplacementImpModule():
   logging.debug("Installed replacement imp module")
 
 
-def InstallAppengineHelperForDjango(version='1.0'):
+def InstallAppengineHelperForDjango(version=None):
   """Installs and Patches all of the classes/methods required for integration.
 
   If the variable DEBUG_APPENGINE_DJANGO is set in the environment verbose
