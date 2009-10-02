@@ -275,6 +275,7 @@ def InstallDjangoModuleReplacements():
   except CheckedException, e:
     logging.debug("Django rollback handler appears to be already disabled.")
 
+
 def PatchDjangoSerializationModules(settings):
   """Monkey patches the Django serialization modules.
 
@@ -318,6 +319,7 @@ def PatchDeserializedObjectClass():
   base.DeserializedObject = NewDeserializedObject
   logging.debug("Replacement DeserializedObject class installed")
 
+
 def DisableModelValidation():
   """Disables Django's model validation routines.
 
@@ -330,6 +332,7 @@ def DisableModelValidation():
   from django.core.management import validation
   validation.get_validation_errors = lambda x, y=0: 0
   logging.debug("Django SQL model validation disabled")
+
 
 def CleanupDjangoSettings(settings):
   """Removes incompatible entries from the django settings module."""
@@ -471,6 +474,21 @@ def InstallReplacementImpModule():
   logging.debug("Installed replacement imp module")
 
 
+def InstallReplacementThreadingModule():
+  """Install a replacement for the python threading module.
+
+  This is only to deal with a bug in Django 1.1+
+  """
+  try:
+    from django.utils._threading_local import local
+    import threading
+    threading.local = local
+  except ImportError:
+    # We are in Django 1.0
+    pass
+  logging.debug("Installed replacement threading module")
+
+
 def InstallAppengineHelperForDjango(version=None):
   """Installs and Patches all of the classes/methods required for integration.
 
@@ -504,6 +522,7 @@ def InstallAppengineHelperForDjango(version=None):
 
   LoadAppengineEnvironment()
   InstallReplacementImpModule()
+  InstallReplacementThreadingModule()
   InstallAppengineDatabaseBackend()
   InstallModelForm()
   InstallGoogleMemcache()

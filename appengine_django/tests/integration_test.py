@@ -166,7 +166,7 @@ class AppEngineClient(client.Client):
     self.handler = AppEngineClientHandler(port=port)
 
 
-class ModuleLoadingTest(test.TestCase):
+class IntegrationTest(test.TestCase):
   """Tests that we can make a request."""
 
   def setUp(self):
