@@ -72,6 +72,11 @@ INCOMPATIBLE_COMMANDS = ["adminindex", "createcachetable", "dbshell",
                          "inspectdb", "runfcgi", "syncdb", "validate"]
 
 
+def FixPython26Logging():
+  import logging
+  logging.logMultiprocessing = 0
+
+
 def LoadSdk():
   # Try to import the appengine code from the system path.
   try:
@@ -129,7 +134,6 @@ def LoadSdk():
     # must come first to allow the local imports to override the SDK and
     # site-packages directories.
     sys.path = sys.path[0:1] + EXTRA_PATHS + sys.path[1:]
-
 
 
 def LoadDjango(version=None):
@@ -496,6 +500,7 @@ def InstallAppengineHelperForDjango(version=None):
   logging of the actions taken will be enabled.
   """
 
+  FixPython26Logging()
   LoadSdk()
   LoadDjango(version)
 
