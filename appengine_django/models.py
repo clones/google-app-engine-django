@@ -44,6 +44,9 @@ class ModelOptions(object):
   this class that needs to be stubbed out is the list of fields on the model.
   """
 
+  # Django 1.1 compat
+  proxy = None
+
   def __init__(self, cls):
     self.object_name = cls.__name__
     self.module_name = self.object_name.lower()
@@ -76,7 +79,27 @@ def PropertyWrapper(prop):
   else:
     prop.rel = None
   prop.serialize = True
+
+  # NOTE(termie): These are rather useless hacks to get around Django changing
+  #               their approach to "fields" and breaking encapsulation a bit,
+  def _get_val_from_obj(obj):
+    if obj:
+      return getattr(obj, prop.name)
+    else:
+      return prop.default_value()
+
+  def value_to_string(obj):
+    if obj:
+      return str(getattr(obj, prop.name))
+    else:
+      return str(prop.default_value())
+
+  prop._get_val_from_obj = _get_val_from_obj
+  prop.value_to_string = value_to_string
+
   return prop
+
+
 
 
 class PropertiedClassWithDjango(db.PropertiedClass):
@@ -144,7 +167,7 @@ class BaseModel(db.Model):
   All models used in the application should derive from this class.
   """
   __metaclass__ = PropertiedClassWithDjango
- 
+
   def __eq__(self, other):
     if not isinstance(other, self.__class__):
       return False
