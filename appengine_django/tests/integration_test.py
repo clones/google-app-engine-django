@@ -93,11 +93,9 @@ def RetrieveURL(method,
   """
   url_host = '%s:%d' % host_port
 
-  logging.info('Connecting to %s', url_host)
   try:
     connection = httplib.HTTPConnection(url_host)
 
-    logging.info('Sending request "%s %s"', method, relative_url)
     try:
       connection.putrequest(method, relative_url)
 
@@ -105,14 +103,12 @@ def RetrieveURL(method,
         email, admin = user_info
         auth_string = '%s=%s' % (dev_appserver_login.COOKIE_NAME,
             dev_appserver_login.CreateCookieData(email, admin))
-        logging.info('Putting auth header: %s', auth_string)
         connection.putheader('Cookie', auth_string)
 
       if body is not None:
         connection.putheader('Content-length', len(body))
 
       for key, value in extra_headers:
-        logging.info('Putting header: %s = %s', str(key), str(value))
         connection.putheader(str(key), str(value))
 
       connection.endheaders()
@@ -124,7 +120,6 @@ def RetrieveURL(method,
       status = response.status
       content = response.read()
       headers = dict(response.getheaders())
-      logging.info('Received response %s with content:\n%s', status, content)
 
       return status, content, headers
     finally:
