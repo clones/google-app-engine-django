@@ -296,6 +296,13 @@ def PatchDjangoSerializationModules(settings):
   base_module = "appengine_django"
   settings.SERIALIZATION_MODULES["xml"] = "%s.serializer.xml" % base_module
   python.Deserializer = Deserializer
+  # This must be imported after the Deserializer has been mokey patched above.
+  from django.core.serializers import json
+  from appengine_django.serializer.json import DjangoJSONEncoder
+  json.DjangoJSONEncoder = DjangoJSONEncoder
+  from django.core.serializers import pyyaml
+  from appengine_django.serializer.pyyaml import DjangoSafeDumper
+  pyyaml.DjangoSafeDumper = DjangoSafeDumper
   PatchDeserializedObjectClass()
   DisableModelValidation()
   logging.debug("Installed appengine json and python serialization modules")

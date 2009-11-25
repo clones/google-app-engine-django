@@ -21,7 +21,8 @@ The only customisation is in the deserialization process which needs to take
 special care to resolve the name and parent attributes of the key for each
 entity and also recreate the keys for any references appropriately.
 """
-
+import datetime
+import re
 
 from django.conf import settings
 from django.core.serializers import base
@@ -82,6 +83,22 @@ def Deserializer(object_list, **options):
           raise base.DeserializationError(u"Cannot load Reference with "
                                           "unnamed key: '%s'" % field_value)
       else:
+        # Handle converting strings to more specific formats.
+        if isinstance(field_value, basestring):
+          if isinstance(field, db.DateProperty):
+            field_value = datetime.datetime.strptime(
+                field_value, '%Y-%m-%d').date()
+          elif isinstance(field, db.TimeProperty):
+            field_value = parse_datetime_with_microseconds(field_value,
+                                                           '%H:%M:%S').time()
+          elif isinstance(field, db.DateTimeProperty):
+            field_value = parse_datetime_with_microseconds(field_value,
+                                                           '%Y-%m-%d %H:%M:%S')
+        # Handle pyyaml datetime.time deserialization - it returns a datetime
+        # instead of a time.
+        if (isinstance(field_value, datetime.datetime) and
+            isinstance(field, db.TimeProperty)):
+          field_value = field_value.time()
         data[field.name] = field.validate(field_value)
     # Create the new model instance with all it's data, but no parent.
     object = Model(**data)
@@ -92,6 +109,32 @@ def Deserializer(object_list, **options):
     # class will set object._parent to force the real parent model to be loaded
     # the first time it is referenced.
     yield base.DeserializedObject(object, m2m_data)
+
+
+def parse_datetime_with_microseconds(field_value, format):
+  """Parses a string to a datetime object including microseconds.
+
+  Args:
+    field_value: The string to parse.
+    format: The format string to parse to datetime.strptime. Not including a
+      format specifier for the expected microseconds component.
+
+  Returns:
+    A datetime instance.
+  """
+  try:
+    # This will only return if no microseconds were availanle.
+    return datetime.datetime.strptime(field_value, format)
+  except ValueError, e:
+    # Hack to deal with microseconds.
+    match = re.match(r'unconverted data remains: \.([0-9]+)$',
+                     str(e))
+    if not match:
+      raise
+    ms_str = match.group(1)
+    without_ms = field_value[:-(len(ms_str)+1)]
+    new_value = datetime.datetime.strptime(without_ms, format)
+    return new_value.replace(microsecond=int(ms_str))
 
 
 def resolve_key(model, key_data):

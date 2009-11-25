@@ -20,6 +20,7 @@ Replaces the default Django XML serializer with one that uses the built in
 ToXml method for each entity.
 """
 
+from datetime import datetime
 import re
 
 from django.conf import settings
@@ -31,6 +32,7 @@ from google.appengine.api import datastore_types
 from google.appengine.ext import db
 
 from python import FakeParent
+from python import parse_datetime_with_microseconds
 
 getInnerText = xml_serializer.getInnerText
 
@@ -134,6 +136,14 @@ class Deserializer(xml_serializer.Deserializer):
                                           "unnamed key: '%s'" % field_value)
         data[field.name] = key_obj
       else:
+        format = '%Y-%m-%d %H:%M:%S'
+        if isinstance(field, db.DateProperty):
+          field_value = datetime.strptime(field_value, format).date()
+        elif isinstance(field, db.TimeProperty):
+          field_value = parse_datetime_with_microseconds(field_value,
+                                                         format).time()
+        elif isinstance(field, db.DateTimeProperty):
+          field_value = parse_datetime_with_microseconds(field_value, format)
         data[field.name] = field.validate(field_value)
 
     # Create the new model instance with all it's data, but no parent.

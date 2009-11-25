@@ -41,6 +41,11 @@ class ModelB(BaseModel):
   description = db.StringProperty()
   friend = db.Reference(ModelA)
 
+class ModelC(BaseModel):
+  dt_value = db.DateTimeProperty(auto_now_add=True)
+  d_value = db.DateProperty(auto_now_add=True)
+  t_value = db.TimeProperty(auto_now_add=True)
+
 
 class TestAllFormats(type):
 
@@ -304,6 +309,12 @@ class SerializationTest(unittest.TestCase):
     """Tests that a reference specified as a plain key_name loads OK."""
     self.doModelKeyDeserialisationReferenceTest(
         self.MK_SERIALIZED_WITH_KEY_AS_TEXT, format)
+
+  def runDateTimeTest(self, format):
+    """Tests that db.DateTimeProperty and related can be correctly handled."""
+    obj = ModelC()
+    obj.put()
+    self.doSerialisationTest(format, obj)
 
 
 if __name__ == '__main__':
