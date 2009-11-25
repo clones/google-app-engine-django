@@ -265,7 +265,7 @@ def InstallDjangoModuleReplacements():
     from django.dispatch import errors
     CheckedException = errors.DispatcherKeyError
     def _disconnectSignal():
-      django.dispatch.dispatcher.disconnc(
+      django.dispatch.dispatcher.disconnect(
           django.db._rollback_on_exception,
           django.core.signals.got_request_exception)
   except ImportError:
