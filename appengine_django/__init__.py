@@ -82,6 +82,9 @@ def LoadSdk():
   try:
     from google.appengine.api import apiproxy_stub_map
   except ImportError, e:
+    # Hack to fix reports of import errors on Ubuntu 9.10.
+    if 'google' in sys.modules:
+      del sys.modules['google']
     # Not on the system path. Build a list of alternative paths where it may be.
     # First look within the project for a local copy, then look for where the Mac
     # OS SDK installs it.
