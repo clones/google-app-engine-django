@@ -79,9 +79,6 @@ def Deserializer(object_list, **options):
       if isinstance(field, db.Reference):
         # Resolve foreign key references.
         data[field.name] = resolve_key(Model._meta.module_name, field_value)
-        if not data[field.name].name():
-          raise base.DeserializationError(u"Cannot load Reference with "
-                                          "unnamed key: '%s'" % field_value)
       else:
         # Handle converting strings to more specific formats.
         if isinstance(field_value, basestring):
