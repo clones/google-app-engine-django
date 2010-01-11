@@ -48,6 +48,7 @@ def start_server(root_path=ROOT_PATH, port=PORT, app_id=APP_ID):
                            login_url=LOGIN_URL,
                            datastore_path='/dev/null',
                            history_path='/dev/null',
+                           blobstore_path='/dev/null',
                            clear_datastore=False)
   server = dev_appserver.CreateServer(ROOT_PATH,
                                       LOGIN_URL,
