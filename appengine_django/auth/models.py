@@ -60,13 +60,19 @@ class User(BaseModel):
 
   @classmethod
   def get_djangouser_for_user(cls, user):
-    query = cls.all().filter("user =", user)
-    if query.count() == 0:
-      django_user = cls(user=user, email=user.email(), username=user.nickname())
-      django_user.save()
-    else:
-      django_user = query.get()
-    return django_user
+    django_user = cls.get_by_key_name(user.user_id())
+    if django_user:
+      return django_user
+
+    # Check to make sure there's no legacy User object before creating a new
+    # one (new style User objects use a key_name based on the user_id).
+    django_user = cls.all().filter('user =', user).get()
+    if django_user:
+      return django_user
+
+    return cls.get_or_insert(
+        key_name=user.user_id(), user=user, email=user.email(),
+        username=user.nickname())
 
   def set_password(self, raw_password):
     raise NotImplementedError
