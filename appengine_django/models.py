@@ -168,6 +168,9 @@ class BaseModel(db.Model):
   """
   __metaclass__ = PropertiedClassWithDjango
 
+  # Required for Django 1.1.2 and 1.2.1
+  _deferred = False
+
   def __eq__(self, other):
     if not isinstance(other, self.__class__):
       return False
