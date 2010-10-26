@@ -45,6 +45,7 @@ import unittest
 import zipfile
 
 
+INSTALLED = False
 DIR_PATH = os.path.abspath(os.path.dirname(__file__))
 PARENT_DIR = os.path.dirname(DIR_PATH)
 if PARENT_DIR.endswith(".zip"):
@@ -511,6 +512,11 @@ def InstallAppengineHelperForDjango(version=None):
   If the variable DEBUG_APPENGINE_DJANGO is set in the environment verbose
   logging of the actions taken will be enabled.
   """
+  global INSTALLED
+  if INSTALLED:
+    logging.warning("App Engine Helper has already been installed for this "
+                    "process (not going to reinstall)")
+    return
 
   FixPython26Logging()
   LoadSdk()
@@ -551,6 +557,7 @@ def InstallAppengineHelperForDjango(version=None):
   InstallAuthentication(settings)
 
   logging.debug("Successfully loaded the Google App Engine Helper for Django.")
+  INSTALLED = True
 
 
 def InstallGoogleSMTPConnection():
