@@ -1,3 +1,12 @@
+Oct 2010
+========
+
+* Add Django 1.2 support. Patch contributed by Felix Leong.
+* Add code to prevent loading/patching the helper in twice in one process.
+  Patch contributed by Kumar McMillan.
+* Add _deferred attribute for Django compatibility. Patch provided by dherbst.
+* Improvements to the serialization of objects from the datetime module. 
+
 June 2009
 =========
 

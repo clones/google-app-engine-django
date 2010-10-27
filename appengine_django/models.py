@@ -36,6 +36,9 @@ class ModelManager(object):
     """Pass all attribute requests through to the real model"""
     return getattr(self.owner, name)
 
+  # Django 1.2.1 compat
+  def using(self, alias):
+    return self.owner
 
 class ModelOptions(object):
   """Replacement for the default Django options class.
@@ -46,6 +49,8 @@ class ModelOptions(object):
 
   # Django 1.1 compat
   proxy = None
+  # Django 1.2.1 compat
+  auto_created = False
 
   def __init__(self, cls):
     self.object_name = cls.__name__
@@ -159,6 +164,7 @@ class PropertiedClassWithDjango(db.PropertiedClass):
 
     fields = [PropertyWrapper(p) for p in cls._properties.values()]
     cls._meta.local_fields = fields
+    cls._meta.fields = fields
 
 
 class BaseModel(db.Model):
