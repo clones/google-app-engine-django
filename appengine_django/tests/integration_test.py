@@ -173,4 +173,6 @@ class IntegrationTest(test.TestCase):
   def testBasic(self):
     """a request to the default page works in the dev_appserver"""
     rv = self.gae_client.get('/')
-    self.assertEquals(rv.status_code, 200)
+    assert rv.status_code not in (500,404), (
+      "Unexpected status code: %s; body excerpt: %s..." % (rv.status_code, rv.content[0:140] or "<empty>")
+    )
