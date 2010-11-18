@@ -330,7 +330,7 @@ def PatchDeserializedObjectClass():
   # This can't be imported until InstallAppengineDatabaseBackend has run.
   from django.core.serializers import base
   class NewDeserializedObject(base.DeserializedObject):
-    def save(self, save_m2m=True):
+    def save(self, save_m2m=True, using=None):
       self.object.save()
       self.object._parent = None
   base.DeserializedObject = NewDeserializedObject
